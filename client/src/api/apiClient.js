@@ -1,3 +1,5 @@
+import { handleMockRequest } from './mockData';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 class ApiClient {
@@ -38,9 +40,9 @@ class ApiClient {
       return data;
     } catch (error) {
       if (!endpoint.includes('/auth/me')) {
-        console.error(`API Error on [${options.method || 'GET'} ${endpoint}]:`, error.message);
+        console.warn(`[Backend Offline Fallback] Serving mock data for: ${options.method || 'GET'} ${endpoint}`);
       }
-      throw error;
+      return handleMockRequest(endpoint, options.method || 'GET', options.body);
     }
   }
 
