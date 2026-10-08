@@ -8,8 +8,7 @@
     "server": "node server/server.js",
     "client": "npm run dev --prefix client",
     "dev": "concurrently --kill-others \"npm run server\" \"npm run client\"",
-    "build": "echo build",
-    "deploy:surge": "npm run build && npx surge client/dist shagun-shine.surge.sh"
+    "build": "npm run build --prefix client"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
