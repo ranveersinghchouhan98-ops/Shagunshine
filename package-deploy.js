@@ -3,20 +3,26 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const rootDir = __dirname;
-const stagingDir = path.join(rootDir, 'deploy_fullstack_temp');
+const stagingFullstack = path.join(rootDir, 'deploy_fullstack_temp');
+const stagingStatic = path.join(rootDir, 'deploy_static_temp');
 const fullstackZip = path.join(rootDir, 'shagun-shine-godaddy-fullstack.zip');
+const staticZip = path.join(rootDir, 'shagun-shine-godaddy-static-public_html.zip');
 
-console.log('--- Packaging Clean Fullstack Deployment for GoDaddy ---');
+console.log('=== Step 1: Building Fresh Production Client ===');
+execSync('npm run build', { cwd: rootDir, stdio: 'inherit' });
 
-// Clean previous staging and zip
-if (fs.existsSync(stagingDir)) {
-  fs.rmSync(stagingDir, { recursive: true, force: true });
-}
-if (fs.existsSync(fullstackZip)) {
-  fs.unlinkSync(fullstackZip);
-}
+console.log('\n=== Step 2: Packaging Clean Fullstack Deployment for GoDaddy ===');
 
-fs.mkdirSync(stagingDir, { recursive: true });
+// Clean previous staging and zips
+[stagingFullstack, stagingStatic].forEach(dir => {
+  if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
+});
+[fullstackZip, staticZip].forEach(zipFile => {
+  if (fs.existsSync(zipFile)) fs.unlinkSync(zipFile);
+});
+
+fs.mkdirSync(stagingFullstack, { recursive: true });
+fs.mkdirSync(stagingStatic, { recursive: true });
 
 function copyRecursive(src, dest, ignoreList = []) {
   const stat = fs.statSync(src);
@@ -31,7 +37,7 @@ function copyRecursive(src, dest, ignoreList = []) {
   }
 }
 
-// 1. Files to copy from root (STRICTLY NO .env OR .env.production)
+// 1. Root files for fullstack (STRICTLY NO .env)
 const rootFiles = [
   'app.js',
   'server.js',
@@ -46,22 +52,22 @@ const rootFiles = [
 for (const f of rootFiles) {
   const srcPath = path.join(rootDir, f);
   if (fs.existsSync(srcPath)) {
-    fs.copyFileSync(srcPath, path.join(stagingDir, f));
+    fs.copyFileSync(srcPath, path.join(stagingFullstack, f));
   }
 }
 
 // 2. Copy server folder (exclude .env, tests, scripts)
 console.log('Copying server folder (sanitized)...');
 const serverIgnore = ['.env', '.env.production', '.env.local', 'scripts', 'tests'];
-copyRecursive(path.join(rootDir, 'server'), path.join(stagingDir, 'server'), serverIgnore);
+copyRecursive(path.join(rootDir, 'server'), path.join(stagingFullstack, 'server'), serverIgnore);
 
-// 3. Copy client folder (including package.json, src, and pre-built dist, ignoring node_modules and env)
-console.log('Copying client folder (with package.json, src, and pre-built dist)...');
+// 3. Copy client folder (with package.json, package-lock.json, src, and pre-built dist)
+console.log('Copying client folder (with dependencies & pre-built dist)...');
 const clientIgnore = ['node_modules', '.env', '.env.local', '.git'];
-copyRecursive(path.join(rootDir, 'client'), path.join(stagingDir, 'client'), clientIgnore);
+copyRecursive(path.join(rootDir, 'client'), path.join(stagingFullstack, 'client'), clientIgnore);
 
 // 4. Also copy dist into root of staging as fallback
-copyRecursive(path.join(rootDir, 'client', 'dist'), path.join(stagingDir, 'dist'));
+copyRecursive(path.join(rootDir, 'client', 'dist'), path.join(stagingFullstack, 'dist'));
 
 // 5. Verification Sweep: Assert NO .env files exist in staging
 function assertNoEnvFiles(dir) {
@@ -78,14 +84,28 @@ function assertNoEnvFiles(dir) {
     }
   }
 }
-assertNoEnvFiles(stagingDir);
+assertNoEnvFiles(stagingFullstack);
 
-console.log('Compressing into shagun-shine-godaddy-fullstack.zip using tar.exe...');
-const items = fs.readdirSync(stagingDir);
-execSync(`tar.exe -a -cf "${fullstackZip}" -C "${stagingDir}" ${items.join(' ')}`, { stdio: 'inherit' });
+console.log('Compressing shagun-shine-godaddy-fullstack.zip using tar.exe...');
+const fullstackItems = fs.readdirSync(stagingFullstack);
+execSync(`tar.exe -a -cf "${fullstackZip}" -C "${stagingFullstack}" ${fullstackItems.join(' ')}`, { stdio: 'inherit' });
+fs.rmSync(stagingFullstack, { recursive: true, force: true });
 
-// Cleanup staging
-fs.rmSync(stagingDir, { recursive: true, force: true });
+console.log('\n=== Step 3: Packaging Static Storefront for GoDaddy public_html ===');
+copyRecursive(path.join(rootDir, 'client', 'dist'), stagingStatic);
+if (fs.existsSync(path.join(rootDir, 'client', 'public', '.htaccess'))) {
+  fs.copyFileSync(path.join(rootDir, 'client', 'public', '.htaccess'), path.join(stagingStatic, '.htaccess'));
+}
 
-const stats = fs.statSync(fullstackZip);
-console.log(`\nSUCCESS! Created: shagun-shine-godaddy-fullstack.zip (${(stats.size / (1024 * 1024)).toFixed(2)} MB)`);
+const staticItems = fs.readdirSync(stagingStatic);
+execSync(`tar.exe -a -cf "${staticZip}" -C "${stagingStatic}" ${staticItems.join(' ')}`, { stdio: 'inherit' });
+fs.rmSync(stagingStatic, { recursive: true, force: true });
+
+const fullstackStats = fs.statSync(fullstackZip);
+const staticStats = fs.statSync(staticZip);
+
+console.log('\n======================================================');
+console.log('🎉 ALL PACKAGES SUCCESSFULLY CREATED!');
+console.log(`1. Full-Stack Archive: ${fullstackZip} (${(fullstackStats.size / (1024 * 1024)).toFixed(2)} MB)`);
+console.log(`2. Static public_html: ${staticZip} (${(staticStats.size / (1024 * 1024)).toFixed(2)} MB)`);
+console.log('======================================================\n');
