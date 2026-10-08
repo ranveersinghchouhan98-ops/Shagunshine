@@ -18,7 +18,8 @@ import {
   X,
   RotateCcw,
   ShieldAlert,
-  Settings
+  Settings,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -33,6 +34,7 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { name: 'Store Billing (POS)', path: '/admin/billing', icon: Receipt, badge: 'Retail' },
     { name: 'Products', path: '/admin/products', icon: Package },
     { name: 'Categories', path: '/admin/categories', icon: Layers },
     { name: 'Orders', path: '/admin/orders', icon: ShoppingBag },
@@ -122,7 +124,12 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
                 }
               >
                 <Icon className="w-4 h-4 text-gold-400 shrink-0" />
-                <span>{item.name}</span>
+                <span className="flex-1 text-left">{item.name}</span>
+                {item.badge && (
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-gold-400/20 text-gold-300 border border-gold-400/40">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             );
           })}

@@ -1,8 +1,12 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
-const rawPassword = '@ShagunShinecosmetics887';
-const email = 'shagunshine887@gmail.com';
+const rawPassword = process.env.ADMIN_PASSWORD || process.argv[2];
+if (!rawPassword) {
+  console.error('ERROR: ADMIN_PASSWORD environment variable or argument is required.');
+  process.exit(1);
+}
+const email = process.env.ADMIN_EMAIL || 'shagunshine887@gmail.com';
 const hashedPassword = bcrypt.hashSync(rawPassword, 10);
 
 console.log('👑 Configuring single Super Admin account...');

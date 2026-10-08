@@ -12,8 +12,8 @@ function seedDatabase() {
     return;
   }
 
-  const superAdminPassword = bcrypt.hashSync('@ShagunShinecosmetics887', 10);
-  const customerPassword = bcrypt.hashSync('Customer@123', 10);
+  const superAdminPassword = bcrypt.hashSync(process.env.INITIAL_ADMIN_PASSWORD || 'ShagunAdmin2026!Secure', 10);
+  const customerPassword = bcrypt.hashSync(process.env.INITIAL_CUSTOMER_PASSWORD || 'Customer@123', 10);
 
   // 1. Seed Single Super Admin User
   const adminId = 'usr_super_admin_001';
@@ -27,8 +27,8 @@ function seedDatabase() {
 
   insertUser.run(
     adminId,
-    'Shagun Shine Super Admin',
-    'shagunshine887@gmail.com',
+    'Shagun Shine Administrator',
+    process.env.INITIAL_ADMIN_EMAIL || 'admin@shagunshine.com',
     superAdminPassword,
     '+91 9876543210',
     'admin',

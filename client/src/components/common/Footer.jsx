@@ -67,17 +67,35 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-maroon-800 text-gold-300 flex items-center justify-center border border-gold-400">
-                <Sparkles className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              <img
+                src="/brand-emblem.jpg"
+                alt="Shagun Shine Cosmetics"
+                className="w-11 h-11 rounded-full border-2 border-gold-400 object-cover shrink-0 shadow-md"
+              />
+              <div className="flex flex-col">
+                <span className="font-serif text-2xl font-bold text-white tracking-tight">
+                  Shagune Shine
+                </span>
+                <span className="text-[10px] tracking-[0.25em] uppercase text-gold-400 font-semibold">
+                  Cosmetics • Indore
+                </span>
               </div>
-              <span className="font-serif text-2xl font-bold text-white tracking-tight">
-                Shagun Shine
-              </span>
             </div>
-            <p className="text-xs text-stone-400 leading-relaxed max-w-sm">
-              Shagun Shine Cosmetics blends timeless royal Indian botanicals with cutting-edge clean skincare science. Crafted with 24K pure gold, Kashmiri saffron, and cold-pressed botanical essences for your eternal glow.
+            <p className="text-xs text-stone-300 leading-relaxed max-w-sm">
+              Shagune Shine Cosmetics blends royal luxury beauty with clean botanicals. Crafted with 24K gold flakes, pure floral actives, and velvet formulations for your eternal glow.
             </p>
+
+            <div className="pt-1 space-y-1.5 text-xs text-stone-300">
+              <div className="flex items-center gap-2 text-gold-300">
+                <Phone className="w-3.5 h-3.5 text-maroon-400 shrink-0" />
+                <span className="font-semibold">+91 90984 39910</span>
+              </div>
+              <div className="flex items-start gap-2 text-stone-400 text-[11px] leading-tight">
+                <MapPin className="w-3.5 h-3.5 text-maroon-400 shrink-0 mt-0.5" />
+                <span>45, Aadharsh Maulik Nagar, near by Hira Nagar Police Station, Sukhliya, Indore</span>
+              </div>
+            </div>
 
             {/* Newsletter */}
             <div className="pt-2">

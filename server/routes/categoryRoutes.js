@@ -3,6 +3,7 @@ const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db');
 const { verifyToken, hasRole } = require('../middleware/auth');
+const sanitizeHtml = require('sanitize-html');
 
 // Format category
 const formatCat = (cat) => ({
@@ -54,6 +55,15 @@ router.get('/all', verifyToken, hasRole(['admin', 'product_manager']), (req, res
   }
 });
 
+const sanitizeImgUrl = (url) => {
+  if (!url || typeof url !== 'string') return 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80';
+  const trimmed = url.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80';
+  }
+  return trimmed;
+};
+
 // @route   POST /api/categories (Admin / Product Manager)
 router.post('/', verifyToken, hasRole(['admin', 'product_manager']), (req, res) => {
   try {
@@ -62,15 +72,25 @@ router.post('/', verifyToken, hasRole(['admin', 'product_manager']), (req, res) 
       return res.status(400).json({ success: false, message: 'Category name is required.' });
     }
 
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const cleanName = sanitizeHtml(name, { allowedTags: [], allowedAttributes: {} }).trim();
+    const cleanDesc = description ? sanitizeHtml(description, { allowedTags: [], allowedAttributes: {} }).trim() : '';
+    const safeImage = sanitizeImgUrl(image);
+
+    const baseSlug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'category';
+    let slug = baseSlug;
+    let counter = 1;
+    while (db.prepare('SELECT id FROM categories WHERE slug = ?').get(slug)) {
+      slug = `${baseSlug}-${counter++}`;
+    }
+
     const id = 'cat_' + uuidv4().substring(0, 8);
 
     db.prepare(`
       INSERT INTO categories (id, name, slug, description, image, subcategories, is_active)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(
-      id, name, slug, description || '',
-      image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80',
+      id, cleanName, slug, cleanDesc,
+      safeImage,
       JSON.stringify(Array.isArray(subcategories) ? subcategories : []),
       is_active ? 1 : 0
     );
@@ -94,9 +114,13 @@ router.put('/:id', verifyToken, hasRole(['admin', 'product_manager']), (req, res
       return res.status(404).json({ success: false, message: 'Category not found.' });
     }
 
+    const cleanName = name ? String(name).trim() : null;
+    const cleanDesc = description !== undefined ? (description ? String(description).trim() : '') : null;
+    const safeImage = image !== undefined ? sanitizeImgUrl(image) : null;
+
     let slug = existing.slug;
-    if (name && name !== existing.name) {
-      slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    if (cleanName && cleanName !== existing.name) {
+      slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     }
 
     db.prepare(`
@@ -109,7 +133,7 @@ router.put('/:id', verifyToken, hasRole(['admin', 'product_manager']), (req, res
         is_active = COALESCE(?, is_active)
       WHERE id = ?
     `).run(
-      name, slug, description, image,
+      cleanName, slug, cleanDesc, safeImage,
       subcategories ? JSON.stringify(subcategories) : null,
       is_active !== undefined ? (is_active ? 1 : 0) : null,
       id

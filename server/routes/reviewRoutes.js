@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
+const sanitizeHtml = require('sanitize-html');
 const db = require('../config/db');
 const { verifyToken, optionalToken, hasRole } = require('../middleware/auth');
 
@@ -14,15 +15,45 @@ router.post('/', optionalToken, (req, res) => {
       return res.status(400).json({ success: false, message: 'Product ID, rating (1-5), and review text are required.' });
     }
 
-    const name = req.user ? req.user.name : (authorName || 'Verified Buyer');
-    const email = req.user ? req.user.email : (authorEmail || '');
+    const product = db.prepare('SELECT id FROM products WHERE id = ?').get(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found.' });
+    }
+
     const userId = req.user ? req.user.id : null;
+
+    // Prevent duplicate reviews on the same product by the same user
+    if (userId) {
+      const existingReview = db.prepare('SELECT id FROM reviews WHERE product_id = ? AND user_id = ?').get(productId, userId);
+      if (existingReview) {
+        return res.status(400).json({ success: false, message: 'You have already submitted a review for this product.' });
+      }
+    }
+
+    const cleanName = sanitizeHtml(req.user ? req.user.name : (authorName || 'Verified Buyer'), { allowedTags: [], allowedAttributes: {} }).trim().substring(0, 60);
+    const cleanEmail = sanitizeHtml(req.user ? req.user.email : (authorEmail || ''), { allowedTags: [], allowedAttributes: {} }).trim().toLowerCase().substring(0, 100);
+    const cleanTitle = sanitizeHtml(title || '', { allowedTags: [], allowedAttributes: {} }).trim().substring(0, 120);
+    const cleanComment = sanitizeHtml(comment || '', { allowedTags: [], allowedAttributes: {} }).trim().substring(0, 2000);
+
+    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid email address.' });
+    }
+
+    // Check duplicate by email if guest
+    if (!userId && cleanEmail) {
+      const existingReview = db.prepare('SELECT id FROM reviews WHERE product_id = ? AND author_email = ?').get(productId, cleanEmail);
+      if (existingReview) {
+        return res.status(400).json({ success: false, message: 'A review for this product has already been submitted with this email.' });
+      }
+    }
+
+    const validRating = Math.min(5, Math.max(1, Math.round(Number(rating) || 5)));
     const reviewId = 'rev_' + uuidv4().substring(0, 8);
 
     db.prepare(`
       INSERT INTO reviews (id, product_id, user_id, author_name, author_email, rating, title, comment, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved')
-    `).run(reviewId, productId, userId, name, email, Number(rating), title || '', comment.trim());
+    `).run(reviewId, productId, userId, cleanName, cleanEmail, validRating, cleanTitle, cleanComment);
 
     // Recalculate product rating and review count
     const stats = db.prepare(`
@@ -70,8 +101,9 @@ router.get('/admin/all', verifyToken, hasRole(['admin', 'product_manager']), (re
     }
 
     if (search) {
-      query += ` AND (r.author_name LIKE ? OR r.comment LIKE ? OR p.name LIKE ?)`;
-      const term = `%${search}%`;
+      const cleanSearch = String(search).trim().substring(0, 80).replace(/[%_\\]/g, '\\$&');
+      query += ` AND (r.author_name LIKE ? ESCAPE '\\' OR r.comment LIKE ? ESCAPE '\\' OR p.name LIKE ? ESCAPE '\\')`;
+      const term = `%${cleanSearch}%`;
       params.push(term, term, term);
     }
 
@@ -96,6 +128,10 @@ router.put('/:id/status', verifyToken, hasRole(['admin', 'product_manager']), (r
   try {
     const { id } = req.params;
     const { status } = req.body; // 'approved', 'rejected', 'pending'
+
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status. Allowed values: approved, rejected, pending.' });
+    }
 
     const review = db.prepare('SELECT * FROM reviews WHERE id = ?').get(id);
     if (!review) {

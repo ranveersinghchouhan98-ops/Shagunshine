@@ -50,6 +50,7 @@ import { AdminStaffPage } from './pages/admin/AdminStaffPage';
 import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 import { AdminAuditLogsPage } from './pages/admin/AdminAuditLogsPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
+import { AdminBillingPage } from './pages/admin/AdminBillingPage';
 
 // Storefront Layout Wrapper
 const StorefrontLayout = () => {
@@ -103,6 +104,7 @@ export function App() {
                   <Route path="products" element={<AdminProductsPage />} />
                   <Route path="categories" element={<AdminCategoriesPage />} />
                   <Route path="orders" element={<AdminOrdersPage />} />
+                  <Route path="billing" element={<AdminBillingPage />} />
                   <Route path="returns" element={<AdminReturnsPage />} />
                   <Route path="customers" element={<AdminCustomersPage />} />
                   <Route path="coupons" element={<AdminCouponsPage />} />

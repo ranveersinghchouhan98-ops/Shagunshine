@@ -37,10 +37,15 @@ router.get('/', verifyToken, hasRole(['admin', 'super_admin']), (req, res) => {
       }
     }
 
-    // Mask sensitive payment secret if present
-    if (settings.payment_config && settings.payment_config.razorpay_key_secret) {
-      const secret = settings.payment_config.razorpay_key_secret;
-      settings.payment_config.razorpay_key_secret = secret.length > 8 ? secret.slice(0, 4) + '********' : '********';
+    // Mask all sensitive payment secrets and webhook credentials
+    if (settings.payment_config && typeof settings.payment_config === 'object') {
+      const secretFields = ['payment_secret', 'razorpayKeySecret', 'webhookSecret', 'webhook_secret', 'key_secret'];
+      for (const f of secretFields) {
+        if (settings.payment_config[f]) {
+          const secret = String(settings.payment_config[f]);
+          settings.payment_config[f] = secret.length > 8 ? secret.slice(0, 4) + '********' : '********';
+        }
+      }
     }
 
     res.json({ success: true, settings });
@@ -62,12 +67,21 @@ router.put('/:key', verifyToken, hasRole(['admin', 'super_admin']), (req, res) =
 
     const valueStr = typeof value === 'object' ? JSON.stringify(value) : String(value);
 
-    // If updating payment_config, preserve existing secret if masked version passed back
-    if (key === 'payment_config' && typeof value === 'object' && value.razorpay_key_secret && value.razorpay_key_secret.includes('****')) {
+    // If updating payment_config, preserve existing secrets if masked versions passed back
+    if (key === 'payment_config' && typeof value === 'object') {
       const existing = db.prepare("SELECT value FROM settings WHERE key = 'payment_config'").get();
-      if (existing) {
-        const existingParsed = JSON.parse(existing.value);
-        value.razorpay_key_secret = existingParsed.razorpay_key_secret;
+      if (existing && existing.value) {
+        try {
+          const existingParsed = JSON.parse(existing.value);
+          const secretFields = ['payment_secret', 'razorpayKeySecret', 'webhookSecret', 'webhook_secret', 'key_secret'];
+          for (const f of secretFields) {
+            if (value[f] && typeof value[f] === 'string' && value[f].includes('****')) {
+              value[f] = existingParsed[f];
+            }
+          }
+        } catch (e) {
+          // ignore parsing error
+        }
       }
     }
 
@@ -97,7 +111,7 @@ router.put('/:key', verifyToken, hasRole(['admin', 'super_admin']), (req, res) =
 
 // @route   POST /api/settings/purge-demo
 // @desc    Safely clear all demo transactional data (orders, returns, coupon usages, demo reviews)
-router.post('/purge-demo', verifyToken, hasRole(['admin', 'super_admin']), (req, res) => {
+router.post('/purge-demo', verifyToken, hasRole(['super_admin']), (req, res) => {
   try {
     const purgeTx = db.transaction(() => {
       db.prepare('DELETE FROM order_items').run();

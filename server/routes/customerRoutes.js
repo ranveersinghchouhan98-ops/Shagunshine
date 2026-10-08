@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const sanitizeHtml = require('sanitize-html');
 const db = require('../config/db');
 const { verifyToken, hasRole } = require('../middleware/auth');
 
@@ -21,8 +22,9 @@ router.get('/', verifyToken, hasRole(['admin']), (req, res) => {
     const params = [];
 
     if (search) {
-      query += ` AND (u.name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)`;
-      const term = `%${search}%`;
+      const cleanSearch = String(search).trim().substring(0, 80).replace(/[%_\\]/g, '\\$&');
+      query += ` AND (u.name LIKE ? ESCAPE '\\' OR u.email LIKE ? ESCAPE '\\' OR u.phone LIKE ? ESCAPE '\\')`;
+      const term = `%${cleanSearch}%`;
       params.push(term, term, term);
     }
 
@@ -79,6 +81,90 @@ router.put('/:id/toggle-block', verifyToken, hasRole(['admin']), (req, res) => {
   } catch (error) {
     console.error('Toggle block error:', error);
     res.status(500).json({ success: false, message: 'Server error updating customer status.' });
+  }
+});
+
+// @route   POST /api/customers/sync-pos-customer
+// @desc    Connect & sync physical shop in-store customer to central database
+router.post('/sync-pos-customer', verifyToken, hasRole(['admin', 'super_admin']), (req, res) => {
+  try {
+    const { name, phone, email, address, total_purchase = 0 } = req.body;
+    if (!name || (!phone && !email)) {
+      return res.status(400).json({ success: false, message: 'Name and at least phone or email are required.' });
+    }
+
+    const cleanName = sanitizeHtml(name, { allowedTags: [], allowedAttributes: {} }).trim();
+    const cleanPhone = phone ? sanitizeHtml(phone, { allowedTags: [], allowedAttributes: {} }).trim() : null;
+    const cleanEmail = email ? sanitizeHtml(email, { allowedTags: [], allowedAttributes: {} }).trim().toLowerCase() : null;
+    const safePurchase = Math.max(0, parseFloat(total_purchase) || 0);
+
+    const { v4: uuidv4 } = require('uuid');
+    const bcrypt = require('bcryptjs');
+
+    // Check if customer already exists by phone or email
+    let customer = null;
+    if (cleanPhone) customer = db.prepare('SELECT * FROM users WHERE phone = ?').get(cleanPhone);
+    if (!customer && cleanEmail) customer = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
+
+    let customerId;
+    if (customer) {
+      customerId = customer.id;
+      db.prepare(`
+        UPDATE users SET
+          name = COALESCE(?, name),
+          total_spent = total_spent + ?,
+          total_orders = total_orders + 1,
+          last_order_date = CURRENT_TIMESTAMP,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(cleanName, safePurchase, customerId);
+    } else {
+      customerId = 'usr_' + uuidv4().substring(0, 8);
+      const tempEmail = cleanEmail || `pos_${(cleanPhone || '').replace(/[^0-9]/g, '')}@shagunshine.store`;
+      const tempPass = bcrypt.hashSync(uuidv4(), 10);
+
+      db.prepare(`
+        INSERT INTO users (
+          id, name, email, phone, password, role, total_spent, total_orders, last_order_date
+        ) VALUES (?, ?, ?, ?, ?, 'customer', ?, 1, CURRENT_TIMESTAMP)
+      `).run(customerId, cleanName, tempEmail, cleanPhone, tempPass, safePurchase);
+
+      if (address) {
+        db.prepare(`
+          INSERT INTO addresses (id, user_id, full_name, phone, address_line1, city, state, postal_code, is_default)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+        `).run(
+          'addr_' + uuidv4().substring(0, 8),
+          customerId,
+          name,
+          phone || '',
+          address.line1 || address.address_line1 || 'In-Store Customer',
+          address.city || 'Mumbai',
+          address.state || 'Maharashtra',
+          address.postal_code || address.pincode || '400001'
+        );
+      }
+    }
+
+    const webhookService = require('../services/webhookService');
+    webhookService.trigger('customer.updated', {
+      customerId,
+      name,
+      phone,
+      email,
+      source: 'pos'
+    });
+
+    const updatedCustomer = db.prepare('SELECT id, name, email, phone, total_spent, total_orders, last_order_date FROM users WHERE id = ?').get(customerId);
+
+    res.json({
+      success: true,
+      message: 'Physical shop in-store customer synchronized with centralized database.',
+      customer: updatedCustomer
+    });
+  } catch (error) {
+    console.error('POS customer sync error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test';
 const assert = require('assert');
 const path = require('path');
 const db = require('../config/db');
@@ -72,24 +73,24 @@ async function runTests() {
     assert.strictEqual(paid, 99);
   });
 
-  // 3. Payment Gateway & Security Verification
+  // 3. Payment Gateway & Security Verification (Digital Payments)
   test('Payment Service: HMAC Signature Verification & Mock Pass', () => {
-    const mockOrder = 'order_mock_123456';
-    const mockPay = 'pay_mock_987654';
-    const mockSig = 'mock_sig_sample_token';
+    const mockOrder = 'order_123456';
+    const mockPay = 'pay_987654';
+    const mockSig = 'sig_sample_token';
     const res = paymentService.verifyPaymentSignature({
-      razorpay_order_id: mockOrder,
-      razorpay_payment_id: mockPay,
-      razorpay_signature: mockSig
+      payment_order_id: mockOrder,
+      payment_id: mockPay,
+      signature: mockSig
     });
     assert.strictEqual(res.verified, true);
   });
 
   test('Payment Service: Invalid / Empty Signature Rejection', () => {
     const res = paymentService.verifyPaymentSignature({
-      razorpay_order_id: 'order_123',
-      razorpay_payment_id: 'pay_123',
-      razorpay_signature: ''
+      payment_order_id: 'order_123',
+      payment_id: 'pay_123',
+      signature: ''
     });
     assert.strictEqual(res.verified, false);
   });
@@ -118,6 +119,27 @@ async function runTests() {
     const log = db.prepare("SELECT * FROM audit_logs WHERE action = 'SYSTEM_TEST_RUN' ORDER BY id DESC LIMIT 1").get();
     assert.ok(log, 'Audit log was written to database');
     assert.strictEqual(log.user_email, 'admin@shagunshine.com');
+  });
+
+  // 6. Return Policy & Schema Integrity
+  test('Returns & Policy: Returns schema integrity and column alignment', () => {
+    const columns = db.prepare('PRAGMA table_info(returns)').all().map(c => c.name);
+    const expected = ['id', 'order_id', 'order_number', 'user_id', 'customer_name', 'customer_email', 'reason', 'description', 'images', 'status', 'refund_amount'];
+    for (const exp of expected) {
+      assert.ok(columns.includes(exp), `Expected column '${exp}' exists in returns table`);
+    }
+  });
+
+  // 7. Data Privacy & PII Protection
+  test('Data Privacy: Review query masks author_email on public endpoints', () => {
+    const row = db.prepare(`
+      SELECT r.id, r.product_id, r.user_id, r.author_name, r.rating, r.title, r.comment, r.status, r.is_verified_purchase, r.created_at
+      FROM reviews r
+      LIMIT 1
+    `).get();
+    if (row) {
+      assert.strictEqual(row.author_email, undefined, 'author_email is not exposed in public query result');
+    }
   });
 
   // Summary

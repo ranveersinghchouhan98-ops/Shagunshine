@@ -61,7 +61,8 @@ class NotificationService {
    * Send Password Reset Link/Token
    */
   async sendPasswordReset(user, token) {
-    const resetUrl = `http://localhost:5173/reset-password?token=${token}`;
+    const baseUrl = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://shagunshine.com' : 'http://localhost:5173');
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
     const payload = {
       channel: 'email',
       recipientEmail: user.email,

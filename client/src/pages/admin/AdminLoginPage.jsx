@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Shield, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Shield, Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
 export const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
+  const { error } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,13 +22,23 @@ export const AdminLoginPage = () => {
     setLoading(true);
     try {
       const data = await login(email, password);
-      if (['admin', 'super_admin', 'product_manager', 'order_manager'].includes(data.user.role)) {
+      const staffRoles = [
+        'admin',
+        'super_admin',
+        'product_manager',
+        'order_manager',
+        'inventory_manager',
+        'customer_support',
+        'marketing_manager',
+        'reports_viewer'
+      ];
+      if (staffRoles.includes(data.user.role)) {
         navigate(from, { replace: true });
       } else {
-        navigate('/');
+        error('Access Denied: This account does not possess administrative privileges.');
       }
     } catch (err) {
-      // Toast notification handled in AuthContext
+      // Toast notification handled in AuthContext / ToastContext
     } finally {
       setLoading(false);
     }
@@ -60,15 +72,15 @@ export const AdminLoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-stone-300 block mb-1">
-                Admin Email Address
+                Admin Email / Username
               </label>
               <div className="relative">
                 <input
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="Enter your admin email"
+                  placeholder="admin@example.com or username"
                   className="w-full px-4 py-3 pl-10 rounded-xl bg-stone-950 border border-stone-700 text-xs text-white placeholder-stone-600 focus:outline-none focus:border-gold-500"
                 />
                 <Mail className="w-4 h-4 text-gold-500 absolute left-3.5 top-3.5" />
@@ -81,14 +93,21 @@ export const AdminLoginPage = () => {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 pl-10 rounded-xl bg-stone-950 border border-stone-700 text-xs text-white placeholder-stone-600 focus:outline-none focus:border-gold-500"
+                  className="w-full px-4 py-3 pl-10 pr-10 rounded-xl bg-stone-950 border border-stone-700 text-xs text-white placeholder-stone-600 focus:outline-none focus:border-gold-500"
                 />
                 <Lock className="w-4 h-4 text-gold-500 absolute left-3.5 top-3.5" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3 text-stone-400 hover:text-gold-400"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -102,7 +121,7 @@ export const AdminLoginPage = () => {
             </button>
           </form>
 
-          <div className="text-center pt-2">
+          <div className="text-center pt-1">
             <Link to="/" className="text-xs text-stone-400 hover:text-gold-300 transition-colors">
               ← Return to Customer Storefront
             </Link>

@@ -2,6 +2,9 @@
 
 > **Shagun Shine Cosmetics** is a production-hardened, Indian-royal-inspired luxury cosmetics e-commerce platform featuring a customer-facing storefront and a complete administrative control console.
 
+> ⚠️ **CRITICAL SECURITY WARNING: SECRET ROTATION REQUIRED BEFORE DEPLOYMENT**  
+> If this repository has historical commits containing default passwords, test keys, or fallback secrets (e.g. `JWT_SECRET`), **rotate and generate new cryptographic keys immediately** for production. Set all secrets securely in server environment variables and never commit `.env` files to git.
+
 ---
 
 ## 📋 Production Readiness & Launch Verification
@@ -11,7 +14,7 @@
 | **Customer Storefront** | ✅ **READY** | Responsive UI (Mobile + Desktop), Category filters, Live search suggestions, Product detail, Wishlist, Bag, Dynamic SEO, and Static Policy pages. |
 | **Admin Console & RBAC** | ✅ **READY** | Granular role-based permissions (`super_admin`, `product_manager`, `order_manager`, `inventory_manager`, `customer_support`, `marketing_manager`, `reports_viewer`). |
 | **Indian GST Tax Engine** | ✅ **READY** | Automated B2C GST computation: Intra-state (CGST 9% + SGST 9%) vs Inter-state (IGST 18%), HSN `330499`, and sequential invoice number generator. |
-| **Payment Gateway** | 🟡 **CONFIG** | Razorpay HMAC-SHA256 signature verification & Webhook idempotency implemented. Supports Mock Sandbox and Razorpay Live/Test modes. |
+| **Payment Gateway** | 🟡 **CONFIG** | Digital Payment Gateway HMAC-SHA256 signature verification & Webhook idempotency implemented. 100% Digital Indian checkout (UPI, Cards, NetBanking). |
 | **Shipping & Logistics** | 🟡 **CONFIG** | 6-digit Indian PIN serviceability engine, ₹999 free shipping threshold, and tracking workflow. Ready for Delhivery/Shiprocket API plug-in. |
 | **Inventory & Concurrency** | ✅ **READY** | Atomic inventory transactions with `inventory_logs` ledger preventing negative stock and overselling. |
 | **Returns & Refunds** | ✅ **READY** | Customer return request flow, admin moderation approval/rejection, and gateway refund triggers. |
@@ -108,11 +111,9 @@ Access via `/admin` or `/admin/login`. Protected by role-based authorization mid
 
 ---
 
-## 🔑 Super Admin Credentials
-
-| Role | Email | Password | Access Level |
-| :--- | :--- | :--- | :--- |
-| **👑 Super Admin** | `shagunshine887@gmail.com` | `@ShagunShinecosmetics887` | Full unrestricted access to all admin modules, settings & catalog |
+## 🔑 Super Admin Access
+ 
+Administrator accounts can be set up securely via environment variables (`INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD`) or configured upon system installation. Plain-text credentials are omitted for production security.
 
 ---
 

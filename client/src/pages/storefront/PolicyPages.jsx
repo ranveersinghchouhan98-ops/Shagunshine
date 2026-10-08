@@ -17,20 +17,20 @@ export const ReturnPolicyPage = () => (
       <section className="space-y-3">
         <h2 className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-gold-600"></span>
-          1. 7-Day Transit & Defect Protection Window
+          1. Strict Return & Refund Eligibility: Wrong or Broken Products Only
         </h2>
         <p>
-          At <strong>Shagun Shine Cosmetics</strong>, we take utmost care in formulating, packaging, and dispatching our luxury skincare and beauty products. If you receive an order that is <strong>physically damaged during transit, missing an item, leaking, or defective</strong>, you are entitled to a full free replacement or 100% refund within <strong>7 days</strong> of delivery.
+          At <strong>Shagun Shine Cosmetics</strong>, all sales are final. We maintain a strict policy: <strong>no returns or refunds are accepted unless the product delivered is a wrong product (incorrect shade, variant, or item) or a broken/damaged product (physically damaged, leaking, or broken during transit)</strong>. No returns or refunds are provided for change of mind, personal preference, or opened items.
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-gold-600"></span>
-          2. Cosmetic Hygiene & Non-Returnable Items
+          2. Cosmetic Hygiene & Strict Non-Returnable Policy
         </h2>
         <p>
-          In accordance with the <em>Drugs & Cosmetics Rules, 2020</em> and international sanitary standards, opened, sampled, or unsealed cosmetic and skincare products <strong>cannot be returned</strong> for general remorse or preference reasons. 
+          Due to strict cosmetic safety and hygiene regulations (CDSCO & Drugs and Cosmetics Rules), cosmetic products once delivered cannot be returned or refunded unless proven to be the wrong item or received in broken/damaged condition.
         </p>
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 text-xs space-y-2">
           <p className="font-semibold text-stone-800">Conditions for Return / Replacement Acceptance:</p>

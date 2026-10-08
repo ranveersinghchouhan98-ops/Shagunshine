@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db');
 const { verifyToken, hasRole, optionalToken, requirePermission } = require('../middleware/auth');
 const auditService = require('../services/auditService');
+const webhookService = require('../services/webhookService');
 
 // Helper to sanitize product object and protect sensitive cost price
 const formatProduct = (p, isAuthorizedStaff = false) => {
@@ -40,16 +41,18 @@ const isStaffUser = (req) => {
 router.get('/search/suggestions', (req, res) => {
   try {
     const q = req.query.q || '';
-    if (!q.trim()) {
+    const cleanQ = String(q).trim().substring(0, 80);
+    if (!cleanQ) {
       return res.json({ success: true, suggestions: [] });
     }
 
-    const searchTerm = `%${q.trim()}%`;
+    const escapedTerm = cleanQ.replace(/[%_\\]/g, '\\$&');
+    const searchTerm = `%${escapedTerm}%`;
     const products = db.prepare(`
       SELECT p.id, p.name, p.slug, p.price, p.discount_price, p.images, c.name as category_name
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
-      WHERE (p.name LIKE ? OR p.description LIKE ? OR p.subcategory LIKE ? OR c.name LIKE ?)
+      WHERE (p.name LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\' OR p.subcategory LIKE ? ESCAPE '\\' OR c.name LIKE ? ESCAPE '\\')
       AND p.status = 'active'
       LIMIT 6
     `).all(searchTerm, searchTerm, searchTerm, searchTerm);
@@ -90,6 +93,9 @@ router.get('/', optionalToken, (req, res) => {
       page = 1
     } = req.query;
 
+    const safeLimit = Math.min(Math.max(1, parseInt(limit) || 50), 100);
+    const safePage = Math.max(1, parseInt(page) || 1);
+
     let query = `
       SELECT p.*, c.name as category_name, c.slug as category_slug
       FROM products p
@@ -117,18 +123,19 @@ router.get('/', optionalToken, (req, res) => {
     }
 
     if (skinType && skinType !== 'All') {
-      query += ` AND (p.skin_type LIKE ? OR p.skin_type = 'All Skin Types')`;
-      params.push(`%${skinType}%`);
+      const cleanSkinType = String(skinType).trim().substring(0, 50).replace(/[%_\\]/g, '\\$&');
+      query += ` AND (p.skin_type LIKE ? ESCAPE '\\' OR p.skin_type = 'All Skin Types')`;
+      params.push(`%${cleanSkinType}%`);
     }
 
-    if (minPrice) {
+    if (minPrice && !isNaN(Number(minPrice))) {
       query += ` AND COALESCE(p.discount_price, p.price) >= ?`;
-      params.push(Number(minPrice));
+      params.push(Math.max(0, Number(minPrice)));
     }
 
-    if (maxPrice) {
+    if (maxPrice && !isNaN(Number(maxPrice))) {
       query += ` AND COALESCE(p.discount_price, p.price) <= ?`;
-      params.push(Number(maxPrice));
+      params.push(Math.max(0, Number(maxPrice)));
     }
 
     if (featured === 'true' || featured === '1') {
@@ -144,8 +151,10 @@ router.get('/', optionalToken, (req, res) => {
     }
 
     if (search) {
-      query += ` AND (p.name LIKE ? OR p.description LIKE ? OR p.sku LIKE ? OR p.hsn_code LIKE ?)`;
-      const term = `%${search}%`;
+      const cleanSearch = String(search).trim().substring(0, 100);
+      const escapedSearch = cleanSearch.replace(/[%_\\]/g, '\\$&');
+      query += ` AND (p.name LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\' OR p.sku LIKE ? ESCAPE '\\' OR p.hsn_code LIKE ? ESCAPE '\\')`;
+      const term = `%${escapedSearch}%`;
       params.push(term, term, term, term);
     }
 
@@ -167,9 +176,9 @@ router.get('/', optionalToken, (req, res) => {
         query += ` ORDER BY p.is_best_seller DESC, p.created_at DESC`;
     }
 
-    const offset = (Number(page) - 1) * Number(limit);
+    const offset = (safePage - 1) * safeLimit;
     query += ` LIMIT ? OFFSET ?`;
-    params.push(Number(limit), Number(offset));
+    params.push(safeLimit, offset);
 
     const products = db.prepare(query).all(...params);
 
@@ -207,9 +216,9 @@ router.get('/:slugOrId', optionalToken, (req, res) => {
 
     const authorized = isStaffUser(req);
 
-    // Get approved customer reviews
+    // Get approved customer reviews (mask PII: do not leak author_email)
     const reviews = db.prepare(`
-      SELECT r.*, u.avatar as user_avatar
+      SELECT r.id, r.product_id, r.user_id, r.author_name, r.rating, r.title, r.comment, r.status, r.is_verified_purchase, r.created_at, u.avatar as user_avatar
       FROM reviews r
       LEFT JOIN users u ON r.user_id = u.id
       WHERE r.product_id = ? AND r.status = 'approved'
@@ -245,6 +254,7 @@ router.post('/', verifyToken, requirePermission('manage_products'), (req, res) =
       category_id,
       subcategory,
       price,
+      mrp,
       discount_price,
       cost_price,
       gst_rate = 18,
@@ -281,21 +291,22 @@ router.post('/', verifyToken, requirePermission('manage_products'), (req, res) =
     }
 
     const productId = 'prod_' + uuidv4().substring(0, 8);
+    const finalMrp = mrp !== undefined ? Number(mrp) : Number(price);
 
     db.prepare(`
       INSERT INTO products (
-        id, name, slug, sku, category_id, subcategory, price, discount_price, cost_price,
+        id, name, slug, sku, category_id, subcategory, price, mrp, discount_price, cost_price,
         gst_rate, hsn_code, batch_number, mfg_date, exp_date, warnings, storage_instructions,
         stock_quantity, description, short_description, ingredients, how_to_use, skin_type,
         benefits, shades, images, status, is_featured, is_best_seller, is_new_arrival
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?
       )
     `).run(
-      productId, name, slug, sku, category_id, subcategory || '', Number(price),
+      productId, name, slug, sku, category_id, subcategory || '', Number(price), finalMrp,
       discount_price ? Number(discount_price) : null, cost_price ? Number(cost_price) : null,
       Number(gst_rate || 18), hsn_code || '330499', batch_number || null, mfg_date || null, exp_date || null,
       warnings || '', storage_instructions || 'Store in a cool, dry place away from direct sunlight.',
@@ -328,6 +339,17 @@ router.post('/', verifyToken, requirePermission('manage_products'), (req, res) =
     });
 
     const created = db.prepare('SELECT * FROM products WHERE id = ?').get(productId);
+
+    // Trigger webhook event for downstream & AI
+    webhookService.trigger('product.created', {
+      id: created.id,
+      sku: created.sku,
+      name: created.name,
+      price: created.price,
+      mrp: created.mrp,
+      stock_quantity: created.stock_quantity
+    });
+
     res.status(201).json({ success: true, message: 'Product created successfully!', product: formatProduct(created, true) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message || 'Server error creating product.' });
@@ -348,6 +370,7 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
       sku,
       category_id,
       subcategory,
+      mrp,
       price,
       discount_price,
       cost_price,
@@ -390,6 +413,15 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
         'Direct update in product manager',
         req.user.id
       );
+
+      // Trigger stock update webhook
+      webhookService.trigger('stock.updated', {
+        id,
+        sku: sku || existing.sku,
+        previous_stock: existing.stock_quantity,
+        new_stock: Number(stock_quantity),
+        source: 'admin_update'
+      });
     }
 
     db.prepare(`
@@ -399,6 +431,7 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
         category_id = COALESCE(?, category_id),
         subcategory = COALESCE(?, subcategory),
         price = COALESCE(?, price),
+        mrp = COALESCE(?, mrp),
         discount_price = ?,
         cost_price = ?,
         gst_rate = COALESCE(?, gst_rate),
@@ -429,6 +462,7 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
       category_id,
       subcategory,
       price !== undefined ? Number(price) : null,
+      mrp !== undefined ? Number(mrp) : null,
       discount_price !== undefined ? (discount_price ? Number(discount_price) : null) : existing.discount_price,
       cost_price !== undefined ? (cost_price ? Number(cost_price) : null) : existing.cost_price,
       gst_rate !== undefined ? Number(gst_rate) : null,
@@ -466,6 +500,17 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
     });
 
     const updated = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+
+    // Trigger webhook event
+    webhookService.trigger('product.updated', {
+      id: updated.id,
+      sku: updated.sku,
+      name: updated.name,
+      price: updated.price,
+      mrp: updated.mrp,
+      stock_quantity: updated.stock_quantity
+    });
+
     res.json({ success: true, message: 'Product updated successfully!', product: formatProduct(updated, true) });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error updating product.' });

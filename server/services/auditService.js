@@ -47,7 +47,9 @@ class AuditService {
    * Query audit logs with pagination and filters
    */
   queryLogs({ page = 1, limit = 50, entityType, action, search }) {
-    const offset = (page - 1) * limit;
+    const safeLimit = Math.min(Math.max(1, parseInt(limit) || 50), 100);
+    const safePage = Math.max(1, parseInt(page) || 1);
+    const offset = (safePage - 1) * safeLimit;
     const conditions = [];
     const params = [];
 
@@ -57,13 +59,15 @@ class AuditService {
     }
 
     if (action && action !== 'all') {
-      conditions.push('action LIKE ?');
-      params.push(`%${action}%`);
+      const cleanAction = String(action).trim().replace(/[%_\\]/g, '\\$&');
+      conditions.push("action LIKE ? ESCAPE '\\'");
+      params.push(`%${cleanAction}%`);
     }
 
     if (search) {
-      conditions.push('(user_email LIKE ? OR user_name LIKE ? OR details LIKE ? OR entity_id LIKE ?)');
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+      const cleanSearch = String(search).trim().replace(/[%_\\]/g, '\\$&');
+      conditions.push("(user_email LIKE ? ESCAPE '\\' OR user_name LIKE ? ESCAPE '\\' OR details LIKE ? ESCAPE '\\' OR entity_id LIKE ? ESCAPE '\\')");
+      params.push(`%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`);
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -76,7 +80,7 @@ class AuditService {
       ${whereClause}
       ORDER BY id DESC
       LIMIT ? OFFSET ?
-    `).all(...params, limit, offset);
+    `).all(...params, safeLimit, offset);
 
     return {
       logs: rows.map(r => ({
@@ -86,8 +90,8 @@ class AuditService {
         })()
       })),
       total,
-      page,
-      totalPages: Math.ceil(total / limit)
+      page: safePage,
+      totalPages: Math.ceil(total / safeLimit)
     };
   }
 }

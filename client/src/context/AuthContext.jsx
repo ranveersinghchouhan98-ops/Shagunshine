@@ -124,8 +124,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const isAdmin = user && user.role === 'admin';
-  const isStaff = user && ['admin', 'product_manager', 'order_manager'].includes(user.role);
+  const staffRoles = [
+    'admin',
+    'super_admin',
+    'product_manager',
+    'order_manager',
+    'inventory_manager',
+    'customer_support',
+    'marketing_manager',
+    'reports_viewer'
+  ];
+  const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin');
+  const isStaff = user && staffRoles.includes(user.role);
   const isAuthenticated = !!user;
 
   return (

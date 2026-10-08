@@ -15,11 +15,12 @@ try {
   db = new Database(dbPath, { verbose: null });
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
+  db.pragma('busy_timeout = 5000');
 } catch (err) {
   // Fallback to built-in node:sqlite (Node 22+)
   const { DatabaseSync } = require('node:sqlite');
   db = new DatabaseSync(dbPath);
-  db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
+  db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
   db.pragma = (str) => {
     try { db.exec(`PRAGMA ${str};`); } catch (e) {}
   };
@@ -382,6 +383,49 @@ function initDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- 18. Outgoing Webhooks Subscriptions Table
+    CREATE TABLE IF NOT EXISTS webhooks (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      url TEXT NOT NULL,
+      events TEXT NOT NULL, -- JSON array of subscribed events
+      secret TEXT NOT NULL,
+      is_active INTEGER DEFAULT 1,
+      failure_count INTEGER DEFAULT 0,
+      last_triggered_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 19. Webhook Delivery & Execution Logs
+    CREATE TABLE IF NOT EXISTS webhook_logs (
+      id TEXT PRIMARY KEY,
+      webhook_id TEXT,
+      event TEXT NOT NULL,
+      direction TEXT DEFAULT 'outgoing', -- 'incoming', 'outgoing'
+      payload TEXT NOT NULL,
+      response_status INTEGER,
+      response_body TEXT,
+      success INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 20. Processed Webhooks Idempotency Log (Prevents duplicate processing)
+    CREATE TABLE IF NOT EXISTS processed_webhooks (
+      id TEXT PRIMARY KEY, -- event ID or payload HMAC signature
+      source TEXT NOT NULL, -- 'gateway', 'system'
+      event_type TEXT NOT NULL,
+      processed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 21. Payment Orders (Tracks gateway order creation & guarantees price/amount integrity)
+    CREATE TABLE IF NOT EXISTS payment_orders (
+      id TEXT PRIMARY KEY,
+      amount INTEGER NOT NULL,
+      currency TEXT DEFAULT 'INR',
+      receipt TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     -- Performance Indexes
     CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
     CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
@@ -441,10 +485,10 @@ function initDefaultSettings() {
     {
       key: 'payment_config',
       value: JSON.stringify({
-        activeGateway: 'mock', // 'mock' or 'razorpay'
-        razorpayKeyId: 'rzp_test_ShagunShine2026',
-        razorpayKeySecret: 'shagun_mock_secret_key_hardened_2026',
-        isCodEnabled: true,
+        activeGateway: 'razorpay',
+        razorpayKeyId: 'rzp_test_TlJ5Nvk5CxSZ1H',
+        razorpayKeySecret: 'J6bJxGsMMrWOZMRXhLcaPyZr',
+        isCodEnabled: false,
         codExtraCharge: 0,
         webhookSecret: 'shagun_webhook_secret_verification_key_99'
       })
@@ -482,28 +526,16 @@ function initDefaultSettings() {
 
   // Run non-destructive column migrations for existing tables
   const alterQueries = [
-    "ALTER TABLE products ADD COLUMN cost_price REAL",
-    "ALTER TABLE products ADD COLUMN gst_rate REAL DEFAULT 18",
-    "ALTER TABLE products ADD COLUMN hsn_code TEXT DEFAULT '330499'",
-    "ALTER TABLE products ADD COLUMN batch_number TEXT",
-    "ALTER TABLE products ADD COLUMN mfg_date DATE",
-    "ALTER TABLE products ADD COLUMN exp_date DATE",
-    "ALTER TABLE products ADD COLUMN warnings TEXT",
-    "ALTER TABLE products ADD COLUMN storage_instructions TEXT",
-    "ALTER TABLE audit_logs ADD COLUMN user_email TEXT",
-    "ALTER TABLE audit_logs ADD COLUMN user_role TEXT",
-    "ALTER TABLE audit_logs ADD COLUMN ip_address TEXT",
-    "ALTER TABLE audit_logs ADD COLUMN entity_type TEXT",
-    "ALTER TABLE audit_logs ADD COLUMN entity_id TEXT",
-    "ALTER TABLE orders ADD COLUMN invoice_number TEXT",
-    "ALTER TABLE orders ADD COLUMN taxable_amount REAL DEFAULT 0",
-    "ALTER TABLE orders ADD COLUMN cgst_amount REAL DEFAULT 0",
-    "ALTER TABLE orders ADD COLUMN sgst_amount REAL DEFAULT 0",
-    "ALTER TABLE orders ADD COLUMN igst_amount REAL DEFAULT 0",
-    "ALTER TABLE orders ADD COLUMN payment_gateway_order_id TEXT",
-    "ALTER TABLE orders ADD COLUMN payment_gateway_payment_id TEXT",
-    "ALTER TABLE orders ADD COLUMN payment_gateway_signature TEXT",
-    "ALTER TABLE orders ADD COLUMN timeline TEXT"
+    "ALTER TABLE products ADD COLUMN mrp REAL",
+    "ALTER TABLE users ADD COLUMN total_spent REAL DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN total_orders INTEGER DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN last_order_date DATETIME",
+    "ALTER TABLE inventory_logs ADD COLUMN change_type TEXT",
+    "ALTER TABLE inventory_logs ADD COLUMN quantity_change INTEGER",
+    "ALTER TABLE inventory_logs ADD COLUMN previous_stock INTEGER",
+    "ALTER TABLE inventory_logs ADD COLUMN new_stock INTEGER",
+    "ALTER TABLE inventory_logs ADD COLUMN reference_id TEXT",
+    "ALTER TABLE inventory_logs ADD COLUMN user_id TEXT"
   ];
 
   for (const q of alterQueries) {
@@ -513,6 +545,11 @@ function initDefaultSettings() {
       // Column already exists, safe to ignore
     }
   }
+
+  // Backfill mrp where null
+  try {
+    db.prepare("UPDATE products SET mrp = price WHERE mrp IS NULL").run();
+  } catch (e) {}
 }
 
 initDatabase();

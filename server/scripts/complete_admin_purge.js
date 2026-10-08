@@ -4,7 +4,12 @@ const bcrypt = require('bcryptjs');
 console.log('🧹 Executing Complete Admin Panel & Transactional Data Purge...\n');
 
 try {
-  const superAdminPassword = bcrypt.hashSync('@ShagunShinecosmetics887', 10);
+  const rawPassword = process.env.ADMIN_PASSWORD || process.argv[2];
+  if (!rawPassword) {
+    console.error('ERROR: ADMIN_PASSWORD environment variable or argument is required.');
+    process.exit(1);
+  }
+  const superAdminPassword = bcrypt.hashSync(rawPassword, 10);
 
   const purgeTx = db.transaction(() => {
     // 1. Wipe all orders, order items & returns

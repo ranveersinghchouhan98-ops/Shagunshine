@@ -40,47 +40,48 @@ export const ContactPage = () => {
             </h3>
 
             <div className="flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-ivory-100 text-maroon-800 flex items-center justify-center shrink-0">
-                <Phone className="w-4 h-4 text-gold-700" />
+              <div className="w-9 h-9 rounded-xl bg-blush-100 text-maroon-800 flex items-center justify-center shrink-0">
+                <Phone className="w-4 h-4 text-maroon-700" />
               </div>
               <div>
                 <span className="text-xs font-bold text-stone-900 block">Customer Hotline & WhatsApp</span>
-                <span className="text-xs text-stone-600">+91 98765 43210 / +91 91234 56789</span>
+                <span className="text-xs text-stone-600 font-semibold">+91 90984 39910</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-ivory-100 text-maroon-800 flex items-center justify-center shrink-0">
-                <Mail className="w-4 h-4 text-gold-700" />
+              <div className="w-9 h-9 rounded-xl bg-blush-100 text-maroon-800 flex items-center justify-center shrink-0">
+                <Mail className="w-4 h-4 text-maroon-700" />
               </div>
               <div>
                 <span className="text-xs font-bold text-stone-900 block">Email Inquiries</span>
-                <span className="text-xs text-stone-600">concierge@shagunshine.com / orders@shagunshine.com</span>
+                <span className="text-xs text-stone-600">contact@shagunshine.com / care@shagunshine.com</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-ivory-100 text-maroon-800 flex items-center justify-center shrink-0">
-                <Clock className="w-4 h-4 text-gold-700" />
+              <div className="w-9 h-9 rounded-xl bg-blush-100 text-maroon-800 flex items-center justify-center shrink-0">
+                <Clock className="w-4 h-4 text-maroon-700" />
               </div>
               <div>
                 <span className="text-xs font-bold text-stone-900 block">Boutique Hours</span>
-                <span className="text-xs text-stone-600">Mon – Sat: 9:30 AM – 7:30 PM IST</span>
+                <span className="text-xs text-stone-600">Mon – Sat: 10:00 AM – 8:30 PM IST</span>
               </div>
             </div>
           </div>
 
           {/* Flagship Boutiques */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm space-y-4">
-            <h3 className="font-serif text-lg font-bold text-stone-900 pb-2 border-b border-stone-100">
-              Flagship Boutiques
+          <div className="bg-white rounded-2xl border border-gold-200/60 p-6 shadow-sm space-y-4">
+            <h3 className="font-serif text-lg font-bold text-stone-900 pb-2 border-b border-blush-100">
+              Flagship Boutique
             </h3>
 
             <div className="flex items-start gap-3.5 text-xs text-stone-600">
-              <MapPin className="w-4 h-4 text-gold-700 shrink-0 mt-0.5" />
+              <MapPin className="w-4 h-4 text-maroon-700 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-stone-900 block">Mumbai Heritage Store</strong>
-                <p>Palais Royale Arcade, Ground Floor, Altamount Road, South Mumbai - 400026</p>
+                <strong className="text-stone-900 block font-serif">Shagune Shine Luxury Store • Indore</strong>
+                <p className="mt-0.5">45, Aadharsh Maulik Nagar, near by Hira Nagar Police Station, Sukhliya, Indore</p>
+                <p className="text-[11px] text-maroon-700 font-semibold mt-1">Makeup • Skincare • Fragrances • Luxury Brands</p>
               </div>
             </div>
 

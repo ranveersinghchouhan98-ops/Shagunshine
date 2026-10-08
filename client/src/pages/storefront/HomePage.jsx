@@ -411,6 +411,55 @@ export const HomePage = () => {
         </div>
       </section>
 
+      {/* 5.5 Flagship Boutique & Store Experience */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16">
+        <div className="relative rounded-3xl overflow-hidden border border-gold-300/40 shadow-luxury bg-gradient-to-r from-blush-50 via-white to-blush-100 p-8 sm:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="space-y-5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-maroon-100 border border-gold-400 text-maroon-800 text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-gold-600" />
+                <span>Indore Flagship Boutique</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 leading-tight">
+                Experience Royal Beauty in Person
+              </h2>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Step into our luxury beauty lounge to explore our signature formulations. Discover our bespoke finishes in <span className="font-semibold text-maroon-800">Velvet Matte</span>, <span className="font-semibold text-maroon-800">Satin Glow</span>, and <span className="font-semibold text-maroon-800">Shimmer Dust</span> crafted for royal radiance.
+              </p>
+
+              <div className="pt-2 space-y-2.5 text-xs text-stone-700">
+                <div className="flex items-center gap-2.5 font-semibold text-maroon-800">
+                  <span className="w-7 h-7 rounded-full bg-maroon-100 flex items-center justify-center text-maroon-800">📞</span>
+                  <span>Customer Care: +91 90984 39910</span>
+                </div>
+                <div className="flex items-start gap-2.5 text-stone-600">
+                  <span className="w-7 h-7 rounded-full bg-gold-100 flex items-center justify-center text-gold-700 shrink-0">📍</span>
+                  <span>45, Aadharsh Maulik Nagar, near by Hira Nagar Police Station, Sukhliya, Indore</span>
+                </div>
+              </div>
+
+              <div className="pt-3">
+                <Link
+                  to="/shop"
+                  className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-maroon-700 via-maroon-800 to-maroon-900 text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-glow-pink transition-all"
+                >
+                  <span>Explore Collections</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="relative rounded-2xl overflow-hidden shadow-xl border-2 border-gold-400/50">
+              <img
+                src="/brand-signboard.jpg"
+                alt="Shagune Shine Cosmetics Flagship Store"
+                className="w-full h-auto object-cover transform hover:scale-102 transition-transform duration-500"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 6. Customer Testimonials */}
       <section className="bg-ivory-100/70 py-16 sm:py-20 border-y border-gold-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

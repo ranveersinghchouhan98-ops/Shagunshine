@@ -14,8 +14,9 @@ class TaxService {
       }
     } catch (e) {}
     return {
-      gstin: '07AAAAA0000A1Z5',
-      state: 'Haryana',
+      gstin: '23AAAAA0000A1Z5',
+      state: 'Madhya Pradesh',
+      city: 'Indore',
       default_gst_rate: 18,
       is_inclusive: true
     };
@@ -24,10 +25,10 @@ class TaxService {
   /**
    * Calculate GST for an order with list of items
    */
-  calculateOrderTax(items = [], customerState = 'Haryana', discountAmount = 0) {
+  calculateOrderTax(items = [], customerState = 'Madhya Pradesh', discountAmount = 0) {
     const config = this.getGstConfig();
-    const originState = (config.state || config.registeredState || 'Haryana').trim().toLowerCase();
-    const destState = (customerState || 'Haryana').trim().toLowerCase();
+    const originState = (config.state || config.registeredState || 'Madhya Pradesh').trim().toLowerCase();
+    const destState = (customerState || 'Madhya Pradesh').trim().toLowerCase();
     const isInterState = originState !== destState;
 
     let subtotal = 0;

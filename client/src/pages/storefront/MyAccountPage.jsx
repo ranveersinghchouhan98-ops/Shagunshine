@@ -25,7 +25,7 @@ import { ProductCard } from '../../components/common/ProductCard';
 import { INDIAN_STATES } from '../../constants/indianStates';
 
 export const MyAccountPage = () => {
-  const { user, addresses, addAddress, deleteAddress, updateProfile, changePassword, logout } = useAuth();
+  const { user, addresses, addAddress, deleteAddress, updateProfile, changePassword, logout, isStaff } = useAuth();
   const { wishlist } = useWishlist();
   const { success, error } = useToast();
   const navigate = useNavigate();
@@ -143,19 +143,43 @@ export const MyAccountPage = () => {
           </div>
         </div>
 
-        <button
-          onClick={logout}
-          className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold uppercase tracking-wider text-white border border-white/20 transition-colors flex items-center gap-2"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Sign Out</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {isStaff && (
+            <Link
+              to="/admin"
+              className="px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-xs font-bold uppercase tracking-wider text-stone-950 transition-colors flex items-center gap-2 shadow-md"
+            >
+              <Shield className="w-4 h-4 text-stone-950" />
+              <span>Admin Console</span>
+            </Link>
+          )}
+
+          <button
+            onClick={logout}
+            className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold uppercase tracking-wider text-white border border-white/20 transition-colors flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Account Tabs & Views */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Navigation Sidebar (3 cols) */}
         <div className="lg:col-span-3 bg-white rounded-2xl border border-stone-200 p-4 shadow-sm space-y-1">
+          {isStaff && (
+            <Link
+              to="/admin"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold tracking-wide bg-maroon-50 text-maroon-900 border border-maroon-200 hover:bg-maroon-100 transition-all mb-2"
+            >
+              <div className="flex items-center gap-3">
+                <Shield className="w-4 h-4 text-maroon-800" />
+                <span>Go to Admin Panel</span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-maroon-700" />
+            </Link>
+          )}
           {[
             { id: 'orders', label: 'Order History & Tracking', icon: Package, badge: orders.length },
             { id: 'profile', label: 'Profile & Security', icon: User },

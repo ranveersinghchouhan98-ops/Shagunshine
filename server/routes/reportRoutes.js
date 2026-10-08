@@ -139,10 +139,35 @@ router.get('/export/sales-csv', verifyToken, hasRole(['admin']), (req, res) => {
       ORDER BY o.created_at DESC
     `).all();
 
+    const safeCsvCell = (val) => {
+      if (val === null || val === undefined) return '""';
+      let str = String(val).replace(/"/g, '""');
+      // Prevent CSV Formula Injection (CWE-1236)
+      if (/^[=+\-@\t\r]/.test(str)) {
+        str = `'${str}`;
+      }
+      return `"${str}"`;
+    };
+
     let csv = 'Order Number,Date,Customer Name,Email,Phone,Payment Method,Payment Status,Order Status,Subtotal,Discount,Coupon,Shipping,Total,Tracking Number\n';
 
     orders.forEach(o => {
-      csv += `"${o.order_number}","${o.created_at}","${o.customer_name}","${o.customer_email}","${o.customer_phone}","${o.payment_method}","${o.payment_status}","${o.order_status}",${o.subtotal},${o.discount_amount},"${o.coupon_code || ''}",${o.shipping_fee},${o.total_amount},"${o.tracking_number || ''}"\n`;
+      csv += [
+        safeCsvCell(o.order_number),
+        safeCsvCell(o.created_at),
+        safeCsvCell(o.customer_name),
+        safeCsvCell(o.customer_email),
+        safeCsvCell(o.customer_phone),
+        safeCsvCell(o.payment_method),
+        safeCsvCell(o.payment_status),
+        safeCsvCell(o.order_status),
+        Number(o.subtotal || 0),
+        Number(o.discount_amount || 0),
+        safeCsvCell(o.coupon_code || ''),
+        Number(o.shipping_fee || 0),
+        Number(o.total_amount || 0),
+        safeCsvCell(o.tracking_number || '')
+      ].join(',') + '\n';
     });
 
     res.setHeader('Content-Type', 'text/csv');

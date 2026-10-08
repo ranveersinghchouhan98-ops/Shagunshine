@@ -14,7 +14,7 @@
 | **Customer Storefront** | ✅ **READY** | Luxury responsive UI (Mobile + Desktop), Category filters, Live search suggestions, Product detail, Wishlist, Bag, Dynamic SEO, and Static Policy pages. |
 | **Admin Console & RBAC** | ✅ **READY** | Dedicated admin panel with role-based authorization (`super_admin`, `product_manager`, `order_manager`, `inventory_manager`, `customer_support`, `marketing_manager`, `reports_viewer`). |
 | **Indian GST Tax Engine** | ✅ **READY** | Automated B2C GST computation: Intra-state (CGST 9% + SGST 9%) vs Inter-state (IGST 18%), HSN `330499`, and sequential invoice number generator. |
-| **Payment Gateway** | 🟡 **CONFIG** | Razorpay HMAC-SHA256 signature verification & Webhook idempotency implemented. Currently in Mock Sandbox Mode; switch to Live Mode by adding Razorpay keys in Admin Settings. |
+| **Payment Gateway** | 🟡 **CONFIG** | Digital Payment Gateway HMAC-SHA256 signature verification & Webhook idempotency implemented. Unified digital checkout (UPI, Cards, NetBanking). |
 | **Shipping & Logistics** | 🟡 **CONFIG** | 6-digit Indian PIN serviceability engine, ₹999 free shipping threshold, and tracking workflow. Ready for Delhivery/Shiprocket API plug-in. |
 | **Inventory & Concurrency** | ✅ **READY** | Atomic inventory transactions with `inventory_logs` ledger preventing negative stock and overselling. |
 | **Returns & Refunds** | ✅ **READY** | Customer return request flow, admin moderation approval/rejection, and gateway refund triggers. |
@@ -23,31 +23,25 @@
 
 ---
 
-## 🔐 Default Access Credentials
-
+## 🔐 Administrator Access
+ 
 > [!IMPORTANT]
-> Change the default administrator passwords upon first login via the **Staff & Roles** page.
-
-| Role | Email | Password | Allowed Capabilities |
-| :--- | :--- | :--- | :--- |
-| **👑 Super Administrator** | `shagunshine887@gmail.com` | `@ShagunShinecosmetics887` | Complete unrestricted access to all settings, catalog, inventory, orders, audit logs, and demo purge. |
+> Administrator accounts are managed securely via environment variables or the Staff & Roles interface. No default credentials are included in production distribution packages.
 
 ---
 
-## 💳 Payment Gateway Setup (Razorpay)
+## 💳 Payment Gateway Setup
 
-The system supports zero credit card data storage compliance. All payments are verified on the server side using cryptographically secure HMAC-SHA256 signatures.
+The system supports zero sensitive card data storage compliance. All payments are verified on the server side using cryptographically secure HMAC-SHA256 signatures.
 
-### Switching from Mock Sandbox to Live Razorpay:
+### Configuring Digital Payment Gateway:
 1. Log in to the Admin Console as Super Admin (`/admin`).
 2. Navigate to **Settings & Launch** (`/admin/settings`) → **Payment Gateway** tab.
-3. Switch **Active Gateway Mode** from `Sandbox Mock Gateway` to `Razorpay Live / Test API`.
-4. Paste your **Razorpay Key ID** (`rzp_live_...`) and **Razorpay Key Secret**.
-5. Configure your webhook endpoint in your Razorpay Dashboard:
-   - **Webhook URL:** `https://your-domain.com/api/orders/webhook`
-   - **Secret:** Enter the webhook secret set in Admin Settings.
-   - **Active Events:** `payment.captured`, `payment.failed`, `refund.processed`.
-6. Click **Save Payment Settings**.
+3. Configure your **Payment Key / API Key**, **Payment Secret Key**, and **Webhook Verification Secret**.
+4. Configure your webhook endpoint in your Payment Gateway Developer Dashboard:
+   - **Payment Webhook URL:** `https://your-domain.com/api/webhooks/incoming/payment-gateway`
+   - **Active Events:** `payment.captured`, `payment.failed`, `order.paid`.
+5. Click **Save Payment Settings**.
 
 ---
 

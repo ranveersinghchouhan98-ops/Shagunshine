@@ -1,7 +1,10 @@
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'shagun_shine_luxury_secret_key_2026_@!';
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('SECURITY CONFIGURATION ERROR: JWT_SECRET environment variable is missing.');
+}
+const JWT_SECRET = process.env.JWT_SECRET || 'shagun_shine_dev_mock_jwt_secret_local_only';
 
 // Role to permissions mapping
 const ROLE_PERMISSIONS = {

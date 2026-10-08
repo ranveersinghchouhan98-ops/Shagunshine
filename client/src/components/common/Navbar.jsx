@@ -78,7 +78,7 @@ export const Navbar = () => {
     <>
       <header className="sticky top-0 z-50 w-full transition-all">
         {/* Announcement Bar */}
-        <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-stone-950 text-gold-200 py-1.5 px-4 text-center text-xs tracking-wider font-medium flex items-center justify-center border-b border-gold-500/20">
+        <div className="bg-gradient-to-r from-maroon-900 via-maroon-700 to-maroon-950 text-gold-200 py-2 px-4 text-center text-xs tracking-wider font-semibold flex items-center justify-center border-b border-gold-400/30 shadow-sm">
           <div className="flex items-center gap-2 animate-in fade-in duration-500">
             <span>{ANNOUNCEMENTS[announcementIdx]}</span>
           </div>
@@ -87,7 +87,7 @@ export const Navbar = () => {
         {/* Main Navbar */}
         <nav
           className={`bg-white/95 backdrop-blur-md border-b transition-all duration-300 ${
-            isScrolled ? 'border-gold-300/40 shadow-md py-3' : 'border-stone-100 py-4'
+            isScrolled ? 'border-gold-300/40 shadow-md py-3' : 'border-blush-200/60 py-4'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,22 +95,24 @@ export const Navbar = () => {
               {/* Mobile Hamburger Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-lg text-stone-700 hover:text-maroon-900 hover:bg-stone-100"
+                className="lg:hidden p-2 rounded-lg text-stone-700 hover:text-maroon-900 hover:bg-blush-50"
                 aria-label="Open navigation menu"
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
 
               {/* Brand Logo */}
-              <Link to="/" className="flex items-center gap-2.5 group">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-maroon-900 via-maroon-800 to-stone-900 p-0.5 shadow-md flex items-center justify-center border border-gold-400 group-hover:rotate-6 transition-transform">
-                  <Sparkles className="w-5 h-5 text-gold-300" />
-                </div>
+              <Link to="/" className="flex items-center gap-3 group">
+                <img
+                  src="/brand-emblem.jpg"
+                  alt="Shagun Shine Cosmetics"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-md border-2 border-gold-400/80 group-hover:scale-105 transition-transform shrink-0"
+                />
                 <div className="flex flex-col">
-                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-stone-900 leading-none group-hover:text-maroon-800 transition-colors">
-                    Shagun Shine
+                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight brand-text-gradient leading-none">
+                    Shagune Shine
                   </span>
-                  <span className="text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-gold-700 font-semibold mt-0.5">
+                  <span className="text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-gold-600 font-bold mt-1">
                     Cosmetics
                   </span>
                 </div>

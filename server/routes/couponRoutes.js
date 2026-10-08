@@ -27,7 +27,10 @@ router.post('/validate', (req, res) => {
       return res.status(400).json({ success: false, message: 'Coupon usage limit has been reached.' });
     }
 
-    const amount = Number(cartTotal || 0);
+    const amount = Number(cartTotal);
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ success: false, message: 'A valid positive cart total is required to apply coupons.' });
+    }
     if (coupon.min_spend && amount < coupon.min_spend) {
       return res.status(400).json({
         success: false,
@@ -78,6 +81,16 @@ router.post('/', verifyToken, hasRole(['admin']), (req, res) => {
     const { code, discount_type, discount_value, min_spend, max_discount, usage_limit, expiry_date, is_active } = req.body;
     if (!code || !discount_type || !discount_value || !expiry_date) {
       return res.status(400).json({ success: false, message: 'Code, discount type, value, and expiry date are required.' });
+    }
+    const numValue = Number(discount_value);
+    if (isNaN(numValue) || numValue <= 0) {
+      return res.status(400).json({ success: false, message: 'Discount value must be a positive number.' });
+    }
+    if (discount_type === 'percentage' && (numValue < 1 || numValue > 100)) {
+      return res.status(400).json({ success: false, message: 'Percentage discount must be between 1% and 100%.' });
+    }
+    if (!['percentage', 'fixed'].includes(discount_type)) {
+      return res.status(400).json({ success: false, message: "Invalid discount type. Must be 'percentage' or 'fixed'." });
     }
 
     const existing = db.prepare('SELECT id FROM coupons WHERE UPPER(code) = UPPER(?)').get(code.trim());

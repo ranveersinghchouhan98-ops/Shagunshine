@@ -1,6 +1,6 @@
 import { handleMockRequest } from './mockData';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 class ApiClient {
   constructor(baseUrl) {
@@ -26,24 +26,26 @@ class ApiClient {
       headers: this.getHeaders(options.headers, isFormData),
     };
 
+    let response;
+    let data;
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, config);
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        if (response.status === 401 && endpoint.includes('/auth/me')) {
-          localStorage.removeItem('shagun_token');
-        }
-        throw new Error(data.message || `Request failed with status ${response.status}`);
-      }
-
-      return data;
-    } catch (error) {
+      response = await fetch(`${this.baseUrl}${endpoint}`, config);
+      data = await response.json().catch(() => ({}));
+    } catch (networkError) {
       if (!endpoint.includes('/auth/me')) {
         console.warn(`[Backend Offline Fallback] Serving mock data for: ${options.method || 'GET'} ${endpoint}`);
       }
       return handleMockRequest(endpoint, options.method || 'GET', options.body);
     }
+
+    if (!response.ok) {
+      if (response.status === 401 && endpoint.includes('/auth/me')) {
+        localStorage.removeItem('shagun_token');
+      }
+      throw new Error(data.message || `Request failed with status ${response.status}`);
+    }
+
+    return data;
   }
 
   get(endpoint, headers = {}) {

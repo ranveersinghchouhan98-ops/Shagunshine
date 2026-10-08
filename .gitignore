@@ -6,9 +6,19 @@ server/node_modules/
 # Environment variables & secrets
 .env
 .env.*
+*.env
+**/.env
+**/.env.*
 !.env.example
+client/.env
+server/.env
 
-# Database temporary files
+# Database & SQLite storage
+*.db
+*.sqlite
+*.sqlite3
+server/data/*.db
+server/data/shagun_shine.db
 *.db-wal
 *.db-shm
 *.db-journal
@@ -40,3 +50,6 @@ Thumbs.db
 *.zip
 *.tar.gz
 *.rar
+
+# Security scan artifacts
+strix_runs/

@@ -21,9 +21,23 @@ router.post('/', verifyToken, (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
-    // Verify customer ownership
-    if (order.user_id && order.user_id !== req.user.id && req.user.role === 'customer') {
-      return res.status(403).json({ success: false, message: 'Unauthorized.' });
+    // Verify customer ownership (prevents IDOR on both user and guest orders)
+    const isOwnerUser = order.user_id && order.user_id === req.user.id;
+    const isOwnerEmail = order.customer_email && req.user.email && order.customer_email.toLowerCase() === req.user.email.toLowerCase();
+    const isStaff = ['admin', 'super_admin', 'order_manager', 'customer_support'].includes(req.user.role);
+
+    if (!isStaff && !isOwnerUser && !isOwnerEmail) {
+      return res.status(403).json({ success: false, message: 'Unauthorized. You can only request returns for your own orders.' });
+    }
+
+    // Strict Return Policy: Only "Wrong Product" or "Broken / Damaged Product" are allowed
+    const reasonLower = String(reason || '').trim().toLowerCase();
+    const isEligibleReason = reasonLower.includes('wrong') || reasonLower.includes('broken') || reasonLower.includes('damage') || reasonLower.includes('defect');
+    if (!isEligibleReason) {
+      return res.status(400).json({
+        success: false,
+        message: 'Per Shagun Shine Cosmetics policy, returns and refunds are strictly permitted ONLY if you received the wrong product or a broken/damaged product.'
+      });
     }
 
     // Check if order is delivered
@@ -34,21 +48,34 @@ router.post('/', verifyToken, (req, res) => {
       });
     }
 
+    // Anti-abuse: Prevent duplicate concurrent return requests on the same order
+    const existingReturn = db.prepare("SELECT id, status FROM returns WHERE order_id = ? AND status NOT IN ('rejected')").get(order.id);
+    if (existingReturn) {
+      return res.status(400).json({
+        success: false,
+        message: 'A return request has already been submitted or processed for this order.'
+      });
+    }
+
     const returnId = 'ret_' + uuidv4().substring(0, 8);
-    const refundAmount = order.total_amount; // Default to full amount or sum of items
+    const refundAmount = order.total_amount; // Full order amount
 
     db.prepare(`
-      INSERT INTO returns (id, order_id, user_id, reason, status, refund_amount, return_items, comments)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO returns (
+        id, order_id, order_number, user_id, customer_name, customer_email,
+        reason, description, images, status, refund_amount
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'requested', ?)
     `).run(
       returnId,
       order.id,
+      order.order_number,
       req.user.id,
+      order.customer_name,
+      order.customer_email,
       reason,
-      'requested',
-      refundAmount,
-      JSON.stringify(items),
-      comments || ''
+      comments || reason,
+      JSON.stringify(items || []),
+      refundAmount
     );
 
     // Update order status to Return_Requested
@@ -95,7 +122,7 @@ router.get('/', verifyToken, requirePermission('manage_returns'), (req, res) => 
       success: true,
       returns: returns.map(r => ({
         ...r,
-        return_items: typeof r.return_items === 'string' ? JSON.parse(r.return_items || '[]') : r.return_items || []
+        return_items: typeof r.images === 'string' ? JSON.parse(r.images || '[]') : (r.return_items || [])
       })),
       total: count,
       page: Number(page)

@@ -376,82 +376,91 @@ export const AdminSettingsPage = () => {
         </div>
       )}
 
-      {/* Tab 3: Payment Gateway */}
+      {/* Tab 3: Payment Gateway (Razorpay) */}
       {activeTab === 'payment' && (
         <div className="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm space-y-6">
           <div className="flex items-center justify-between border-b border-stone-100 pb-4">
             <div>
-              <h2 className="font-serif text-lg font-bold text-stone-900">Payment Gateway Integration</h2>
-              <p className="text-xs text-stone-500">Configure Razorpay or Mock sandbox payment keys and Cash on Delivery.</p>
+              <h2 className="font-serif text-lg font-bold text-stone-900">Razorpay Payment Gateway</h2>
+              <p className="text-xs text-stone-500">
+                Accept 100% Prepaid Payments via UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, and NetBanking.
+              </p>
             </div>
             <button
-              onClick={() => handleSave('payment_config', paymentConfig, 'Payment Configuration')}
+              onClick={() => handleSave('payment_config', paymentConfig, 'Razorpay Settings')}
               disabled={saving}
               className="flex items-center gap-2 px-4 py-2 bg-maroon-900 text-gold-200 text-xs font-bold rounded-xl hover:bg-maroon-800 transition"
             >
               <Save className="w-4 h-4" />
-              <span>Save Payment Settings</span>
+              <span>Save Razorpay Settings</span>
             </button>
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">Active Gateway Mode</label>
-              <select
-                value={paymentConfig.provider}
-                onChange={(e) => setPaymentConfig({ ...paymentConfig, provider: e.target.value })}
-                className="w-full md:w-1/2 px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400"
-              >
-                <option value="mock">Sandbox Mock Gateway (Simulated Instant Verification)</option>
-                <option value="razorpay">Razorpay Live / Test API</option>
-              </select>
+            <div className="p-4 bg-sky-50 border border-sky-200 rounded-xl flex items-center justify-between">
+              <div>
+                <span className="font-bold text-sky-950 text-xs block">Official Razorpay Integration Ready</span>
+                <span className="text-[11px] text-sky-800">
+                  Enter your Razorpay Key ID and Key Secret from the Razorpay Dashboard. Supports both Test Mode (<code>rzp_test_...</code>) and Live Mode (<code>rzp_live_...</code>).
+                </span>
+              </div>
+              <span className="bg-sky-200 text-sky-900 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">
+                Razorpay
+              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Razorpay Key ID</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Razorpay Key ID <span className="text-maroon-800">*</span>
+                </label>
                 <input
                   type="text"
-                  value={paymentConfig.razorpay_key_id}
-                  onChange={(e) => setPaymentConfig({ ...paymentConfig, razorpay_key_id: e.target.value })}
-                  placeholder="rzp_live_xxxxxxxx or rzp_test_xxxxxxxx"
+                  value={paymentConfig.razorpayKeyId || paymentConfig.payment_key_id || ''}
+                  onChange={(e) => setPaymentConfig({ ...paymentConfig, razorpayKeyId: e.target.value, payment_key_id: e.target.value })}
+                  placeholder="rzp_test_... or rzp_live_..."
                   className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
                 />
+                <p className="text-[10px] text-stone-400 mt-1">Found in Razorpay Dashboard → Account & Settings → API Keys</p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Razorpay Key Secret</label>
-                <input
-                  type="password"
-                  value={paymentConfig.razorpay_key_secret}
-                  onChange={(e) => setPaymentConfig({ ...paymentConfig, razorpay_key_secret: e.target.value })}
-                  placeholder="Keep secure (never exposed to client)"
-                  className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Razorpay Webhook Secret</label>
-                <input
-                  type="password"
-                  value={paymentConfig.webhook_secret}
-                  onChange={(e) => setPaymentConfig({ ...paymentConfig, webhook_secret: e.target.value })}
-                  placeholder="Optional webhook secret"
-                  className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
-                />
-              </div>
-
-              <div className="flex items-center gap-3 pt-6">
-                <input
-                  type="checkbox"
-                  id="cod"
-                  checked={paymentConfig.cod_enabled}
-                  onChange={(e) => setPaymentConfig({ ...paymentConfig, cod_enabled: e.target.checked })}
-                  className="w-4 h-4 text-maroon-900 rounded border-stone-300 focus:ring-gold-400"
-                />
-                <label htmlFor="cod" className="text-xs text-stone-700 font-medium">
-                  Enable Cash on Delivery (COD) Checkout
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Razorpay Key Secret <span className="text-maroon-800">*</span>
                 </label>
+                <input
+                  type="password"
+                  value={paymentConfig.razorpayKeySecret || paymentConfig.payment_secret || ''}
+                  onChange={(e) => setPaymentConfig({ ...paymentConfig, razorpayKeySecret: e.target.value, payment_secret: e.target.value })}
+                  placeholder="Generated Razorpay secret key"
+                  className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
+                />
+                <p className="text-[10px] text-stone-400 mt-1">Generated alongside Key ID in your Razorpay Dashboard</p>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Razorpay Webhook Secret (Optional for Real-time Webhooks)
+                </label>
+                <input
+                  type="password"
+                  value={paymentConfig.webhookSecret || paymentConfig.webhook_secret || ''}
+                  onChange={(e) => setPaymentConfig({ ...paymentConfig, webhookSecret: e.target.value, webhook_secret: e.target.value })}
+                  placeholder="Secret entered when creating Razorpay Webhook"
+                  className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
+                />
+                <p className="text-[10px] text-stone-400 mt-1">
+                  Webhook URL to add in Razorpay Dashboard: <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700">http://localhost:5000/api/webhooks/incoming/payment-gateway</code>
+                </p>
+              </div>
+
+              <div className="md:col-span-2 pt-2">
+                <div className="p-3 bg-stone-100 rounded-xl border border-stone-200 flex items-center justify-between text-stone-600 text-xs">
+                  <span className="font-bold text-stone-900">Cash on Delivery (COD) Policy:</span>
+                  <span className="bg-stone-300 text-stone-800 text-[10px] font-bold px-2 py-0.5 rounded">
+                    Permanently Disabled (100% Prepaid Orders Only)
+                  </span>
+                </div>
               </div>
             </div>
           </div>
