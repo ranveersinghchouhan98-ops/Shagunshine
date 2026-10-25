@@ -15,15 +15,6 @@ export const CartProvider = ({ children }) => {
     }
   });
 
-  const [coupon, setCoupon] = useState(() => {
-    try {
-      const saved = localStorage.getItem('shagun_coupon');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const { success, error, info } = useToast();
 
@@ -32,12 +23,8 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   useEffect(() => {
-    if (coupon) {
-      localStorage.setItem('shagun_coupon', JSON.stringify(coupon));
-    } else {
-      localStorage.removeItem('shagun_coupon');
-    }
-  }, [coupon]);
+    localStorage.removeItem('shagun_coupon');
+  }, []);
 
   const addToCart = (product, quantity = 1, selectedShade = null, openDrawer = true) => {
     if (!product || product.stock_quantity <= 0) {
@@ -117,62 +104,18 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCartItems([]);
-    setCoupon(null);
   };
 
   // Calculations
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discountAmount = 0;
 
-  let discountAmount = 0;
-  if (coupon && subtotal > 0) {
-    if (coupon.discountType === 'percentage') {
-      let disc = (subtotal * coupon.discountValue) / 100;
-      if (coupon.maxDiscount && disc > coupon.maxDiscount) {
-        disc = coupon.maxDiscount;
-      }
-      discountAmount = disc;
-    } else {
-      discountAmount = Math.min(coupon.discountValue, subtotal);
-    }
-  }
-
-  // Free shipping threshold ₹999
-  const FREE_SHIPPING_THRESHOLD = 999;
-  const freeShippingRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const shippingFee = subtotal === 0 ? 0 : subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 99;
-  const totalAmount = Math.max(0, subtotal - discountAmount + shippingFee);
+  // 100% Free Shipping on all orders (no minimum threshold)
+  const FREE_SHIPPING_THRESHOLD = 0;
+  const freeShippingRemaining = 0;
+  const shippingFee = 0;
+  const totalAmount = subtotal;
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-  const applyCoupon = async (code) => {
-    if (!code || !code.trim()) {
-      error('Please enter a coupon code.');
-      return false;
-    }
-
-    try {
-      const data = await api.post('/coupons/validate', { code: code.trim(), cartTotal: subtotal });
-      if (data.success) {
-        setCoupon(data.coupon);
-        success(data.message);
-        // Fire celebration confetti
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#D4AF37', '#8B1E3B', '#F5EED9']
-        });
-        return true;
-      }
-    } catch (err) {
-      error(err.message || 'Invalid coupon code.');
-      return false;
-    }
-  };
-
-  const removeCoupon = () => {
-    setCoupon(null);
-    info('Coupon removed.');
-  };
 
   return (
     <CartContext.Provider
@@ -185,14 +128,14 @@ export const CartProvider = ({ children }) => {
         totalAmount,
         freeShippingRemaining,
         FREE_SHIPPING_THRESHOLD,
-        coupon,
+        coupon: null,
         isCartDrawerOpen,
         addToCart,
         updateQuantity,
         removeFromCart,
         clearCart,
-        applyCoupon,
-        removeCoupon,
+        applyCoupon: async () => false,
+        removeCoupon: () => {},
         openCartDrawer: () => setIsCartDrawerOpen(true),
         closeCartDrawer: () => setIsCartDrawerOpen(false)
       }}

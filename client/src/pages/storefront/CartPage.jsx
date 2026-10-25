@@ -9,7 +9,6 @@ import {
   ArrowRight,
   ShieldCheck,
   Gift,
-  Tag,
   ArrowLeft
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
@@ -21,33 +20,14 @@ export const CartPage = () => {
     removeFromCart,
     clearCart,
     subtotal,
-    discountAmount,
     shippingFee,
-    totalAmount,
-    freeShippingRemaining,
-    FREE_SHIPPING_THRESHOLD,
-    coupon,
-    applyCoupon,
-    removeCoupon
+    totalAmount
   } = useCart();
 
-  const [couponInput, setCouponInput] = useState('');
   const [giftWrap, setGiftWrap] = useState(false);
   const [orderNote, setOrderNote] = useState('');
-  const [isApplying, setIsApplying] = useState(false);
 
   const navigate = useNavigate();
-
-  const handleApplyCoupon = async (e) => {
-    e.preventDefault();
-    if (!couponInput.trim()) return;
-    setIsApplying(true);
-    const ok = await applyCoupon(couponInput);
-    setIsApplying(false);
-    if (ok) setCouponInput('');
-  };
-
-  const freeShippingPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
 
   if (cartItems.length === 0) {
     return (
@@ -89,24 +69,14 @@ export const CartPage = () => {
         </button>
       </div>
 
-      {/* Free Shipping Progress Indicator */}
-      <div className="bg-gradient-to-r from-blush-50 via-gold-50 to-ivory-100 border border-gold-200/80 rounded-2xl p-4 sm:p-5">
-        <div className="flex items-center justify-between text-xs font-semibold text-stone-800 mb-2">
-          <span className="flex items-center gap-1.5">
+      {/* Free Shipping Highlight */}
+      <div className="bg-gradient-to-r from-emerald-50 via-gold-50/60 to-ivory-100 border border-gold-200/80 rounded-2xl p-4 sm:p-5">
+        <div className="flex items-center justify-between text-xs font-semibold text-stone-800">
+          <span className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-gold-600" />
-            {freeShippingRemaining > 0 ? (
-              <>Add <strong className="text-maroon-800">₹{freeShippingRemaining.toFixed(0)}</strong> more for <strong>FREE Luxury Delivery</strong></>
-            ) : (
-              <span className="text-emerald-700 font-bold">✨ You have unlocked FREE Express Luxury Shipping!</span>
-            )}
+            <span className="text-emerald-700 font-bold">✨ You have unlocked FREE Express Luxury Shipping on all orders!</span>
           </span>
-          <span className="font-bold text-gold-700">{freeShippingPercent}%</span>
-        </div>
-        <div className="w-full h-2.5 bg-stone-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-gold-400 via-gold-500 to-maroon-800 rounded-full transition-all duration-500"
-            style={{ width: `${freeShippingPercent}%` }}
-          />
+          <span className="font-bold text-emerald-700 text-xs uppercase tracking-wider bg-emerald-100/70 px-3 py-1 rounded-full">Pan-India Free</span>
         </div>
       </div>
 
@@ -228,57 +198,12 @@ export const CartPage = () => {
             Order Summary
           </h3>
 
-          {/* Coupon Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-stone-700 block">
-              Promotional Coupon
-            </label>
-            {coupon ? (
-              <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
-                <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-emerald-600" />
-                  <span>Code <strong>{coupon.code}</strong> applied (-₹{discountAmount.toFixed(0)})</span>
-                </div>
-                <button
-                  onClick={removeCoupon}
-                  className="text-emerald-800 hover:text-red-600 font-bold underline text-xs"
-                >
-                  Remove
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                <input
-                  type="text"
-                  value={couponInput}
-                  onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                  placeholder="Code (e.g. SHINE20)"
-                  className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:border-gold-500 uppercase"
-                />
-                <button
-                  type="submit"
-                  disabled={isApplying || !couponInput.trim()}
-                  className="px-5 py-2 bg-stone-900 hover:bg-stone-950 text-white rounded-xl text-xs font-semibold tracking-wide disabled:opacity-50"
-                >
-                  Apply
-                </button>
-              </form>
-            )}
-          </div>
-
           {/* Price Breakdown */}
           <div className="space-y-2.5 text-xs text-stone-600 pt-2 border-t border-stone-100">
             <div className="flex justify-between">
               <span>Bag Subtotal</span>
               <span className="font-semibold text-stone-900">₹{subtotal.toLocaleString()}</span>
             </div>
-
-            {discountAmount > 0 && (
-              <div className="flex justify-between text-emerald-700 font-semibold">
-                <span>Coupon Discount</span>
-                <span>-₹{discountAmount.toFixed(0)}</span>
-              </div>
-            )}
 
             <div className="flex justify-between">
               <span>Estimated Shipping</span>

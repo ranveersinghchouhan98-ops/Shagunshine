@@ -144,15 +144,22 @@ export const AdminProductsPage = () => {
       };
 
       if (editingProduct) {
-        await api.put(`/products/${editingProduct.id}`, payload);
+        const res = await api.put(`/products/${editingProduct.id}`, payload);
+        const updatedProduct = res?.product || { ...editingProduct, ...payload, id: editingProduct.id };
+        setProducts((prev) =>
+          prev.map((p) => (p.id === editingProduct.id ? updatedProduct : p))
+        );
         success('Product updated successfully!');
       } else {
-        await api.post('/products', payload);
+        const res = await api.post('/products', payload);
+        if (res?.product) {
+          setProducts((prev) => [res.product, ...prev]);
+        }
         success('Product created successfully!');
       }
 
       setIsModalOpen(false);
-      fetchData();
+      await fetchData();
     } catch (err) {
       error(err.message || 'Error saving product.');
     } finally {
@@ -375,7 +382,7 @@ export const AdminProductsPage = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    placeholder="e.g. 24K Gold Radiant Youth Elixir"
+                    placeholder="e.g. Radiant Saffron Youth Glow Serum"
                     className="w-full px-3.5 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:border-gold-500"
                   />
                 </div>
@@ -411,7 +418,7 @@ export const AdminProductsPage = () => {
                     type="text"
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
-                    placeholder="e.g. Serums & Elixirs"
+                    placeholder="e.g. Serums & Treatments"
                     className="w-full px-3.5 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:border-gold-500"
                   />
                 </div>
@@ -533,7 +540,7 @@ export const AdminProductsPage = () => {
                     rows={2}
                     value={ingredients}
                     onChange={(e) => setIngredients(e.target.value)}
-                    placeholder="24K Pure Gold Flakes, Kashmiri Saffron, Hyaluronic Acid..."
+                    placeholder="Kashmiri Saffron, Hyaluronic Acid, Rose Extract..."
                     className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300"
                   />
                 </div>

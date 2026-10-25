@@ -151,7 +151,7 @@ export const ProductDetailPage = () => {
     }
     setPincodeStatus({
       available: true,
-      message: 'Luxury delivery available in 3-4 business days! Cash on Delivery accepted.'
+      message: 'Luxury delivery available in 3-4 business days! 100% Secure Prepaid (UPI, Cards, NetBanking).'
     });
   };
 
@@ -478,7 +478,7 @@ export const ProductDetailPage = () => {
           <div className="grid grid-cols-3 gap-3 pt-2 text-center text-[11px] text-stone-600">
             <div className="p-2.5 rounded-xl bg-ivory-50 border border-gold-200/40">
               <Truck className="w-4 h-4 text-maroon-800 mx-auto mb-1" />
-              <span>Free Express Delivery Above ₹999</span>
+              <span>Complimentary Express Delivery</span>
             </div>
             <div className="p-2.5 rounded-xl bg-ivory-50 border border-gold-200/40">
               <RotateCcw className="w-4 h-4 text-maroon-800 mx-auto mb-1" />
@@ -536,7 +536,7 @@ export const ProductDetailPage = () => {
             <div className="space-y-3">
               <p className="font-medium text-stone-900">Complete Key Actives & Botanical List:</p>
               <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 font-mono text-xs text-stone-600 leading-loose">
-                {product.ingredients || 'Aqua, 24K Pure Gold Dust, Kashmiri Saffron (Crocus Sativus), Hyaluronic Acid, Rose Extract, Botanical Glycerin, Tocopherol (Vitamin E).'}
+                {product.ingredients || 'Aqua, Kashmiri Saffron (Crocus Sativus), Hyaluronic Acid, Rose Extract, Botanical Glycerin, Tocopherol (Vitamin E).'}
               </div>
               <p className="text-xs text-stone-500 italic">
                 * All our ingredients are ethically sourced and 100% free of harmful parabens, phthalates, and harsh chemicals.
@@ -567,8 +567,8 @@ export const ProductDetailPage = () => {
               </div>
               <div className="p-4 rounded-xl bg-ivory-50 border border-gold-200/50 space-y-1">
                 <Star className="w-5 h-5 text-amber-600" />
-                <h5 className="font-bold text-stone-900 text-sm">Pure Gold Infusion</h5>
-                <p className="text-xs text-stone-500">Real 24K gold flakes for radiant, cellular rejuvenation.</p>
+                <h5 className="font-bold text-stone-900 text-sm">Pure Botanical Radiance</h5>
+                <p className="text-xs text-stone-500">Rich antioxidant botanical extracts for luminous cellular rejuvenation.</p>
               </div>
             </div>
           )}

@@ -60,15 +60,9 @@ export const ReturnPolicyPage = () => (
           <span className="w-2 h-2 rounded-full bg-gold-600"></span>
           4. Refund Modes & Timelines
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-          <div className="border border-stone-200 bg-stone-50/50 p-4 rounded-xl">
-            <h4 className="font-bold text-stone-900 mb-1">Prepaid Orders (Cards, UPI, NetBanking)</h4>
-            <p className="text-xs text-stone-600">Refund is initiated immediately upon return pickup inspection and credited back to the original source bank/wallet within <strong>3 to 5 business days</strong>.</p>
-          </div>
-          <div className="border border-stone-200 bg-stone-50/50 p-4 rounded-xl">
-            <h4 className="font-bold text-stone-900 mb-1">Cash on Delivery (COD) Orders</h4>
-            <p className="text-xs text-stone-600">Refund is transferred directly via verified <strong>UPI ID or NEFT/IMPS Direct Bank Transfer</strong> upon receipt of beneficiary account details within <strong>2 to 4 business days</strong>.</p>
-          </div>
+        <div className="border border-stone-200 bg-stone-50/50 p-4 rounded-xl">
+          <h4 className="font-bold text-stone-900 mb-1">Prepaid Orders (Cards, UPI, NetBanking)</h4>
+          <p className="text-xs text-stone-600">As Shagun Shine operates exclusively as a prepaid store, all approved refunds are initiated immediately upon return pickup inspection and credited directly back to the original source bank/card/wallet account within <strong>3 to 5 business days</strong>.</p>
         </div>
       </section>
 
@@ -124,22 +118,15 @@ export const ShippingPolicyPage = () => (
             </thead>
             <tbody>
               <tr>
-                <td className="border border-stone-200 p-2.5 font-medium text-maroon-800">₹999 and above</td>
+                <td className="border border-stone-200 p-2.5 font-medium text-maroon-800">All Orders (Pan India)</td>
                 <td className="border border-stone-200 p-2.5">Prepaid (UPI, Card, NetBanking)</td>
                 <td className="border border-stone-200 p-2.5 text-emerald-700 font-bold">FREE (Complimentary Express)</td>
               </tr>
-              <tr>
-                <td className="border border-stone-200 p-2.5">Below ₹999</td>
-                <td className="border border-stone-200 p-2.5">Prepaid</td>
-                <td className="border border-stone-200 p-2.5">₹99 (Standard Express)</td>
-              </tr>
-              <tr>
-                <td className="border border-stone-200 p-2.5">Any Value</td>
-                <td className="border border-stone-200 p-2.5">Cash on Delivery (COD)</td>
-                <td className="border border-stone-200 p-2.5">Standard Fee + ₹50 Handling Fee</td>
-              </tr>
             </tbody>
           </table>
+          <p className="text-[11px] text-stone-500 mt-2 italic">
+            * Please note: In accordance with our business and hygiene policies, Shagun Shine Cosmetics operates as a 100% prepaid store. We do not provide Cash on Delivery (COD).
+          </p>
         </div>
       </section>
 
@@ -188,7 +175,7 @@ export const PrivacyPolicyPage = () => (
           1. Data Fiduciary Commitment
         </h2>
         <p>
-          <strong>Shagun Shine Cosmetics Private Limited</strong> acts as a Data Fiduciary under the <em>Digital Personal Data Protection (DPDP) Act, 2023</em> and the <em>Information Technology Act, 2000</em>. We are strictly committed to safeguarding your personal data, ensuring transparency, privacy, and military-grade encryption in all interactions.
+          <strong>SHAGUN SHINE COSMETICS</strong> (Proprietor: Rajkumar Singh Chouhan) acts as a Data Fiduciary under the <em>Digital Personal Data Protection (DPDP) Act, 2023</em> and the <em>Information Technology Act, 2000</em>. We are strictly committed to safeguarding your personal data, ensuring transparency, privacy, and encryption in all interactions.
         </p>
       </section>
 
@@ -254,9 +241,11 @@ export const PrivacyPolicyPage = () => (
           In accordance with the <em>Information Technology Act, 2000</em> and <em>Consumer Protection (E-Commerce) Rules, 2020</em>, the contact details of the Grievance Officer are published below:
         </p>
         <div className="text-xs space-y-1 text-stone-700">
-          <p><strong>Designation:</strong> Chief Grievance & Compliance Officer</p>
-          <p><strong>Company:</strong> Shagun Shine Cosmetics Private Limited</p>
-          <p><strong>Official Email:</strong> <a href="mailto:care@shagunshine.com" className="text-maroon-800 font-semibold underline">care@shagunshine.com</a> / <a href="mailto:shagunshine887@gmail.com" className="text-maroon-800 font-semibold underline">shagunshine887@gmail.com</a></p>
+          <p><strong>Designation:</strong> Grievance & Compliance Officer (Proprietor: Rajkumar Singh Chouhan)</p>
+          <p><strong>Enterprise:</strong> SHAGUN SHINE COSMETICS (GSTIN: 23BBVPC0623C1Z8 | UDYAM-MP-23-0310066)</p>
+          <p><strong>Registered Address:</strong> 45, Adarsh Maulik Nagar Road, Sukhliya (Near Surabhi Shoe Mart), Indore, Madhya Pradesh - 452003</p>
+          <p><strong>Official Email:</strong> <a href="mailto:rajsinghchouhan112@gmail.com" className="text-maroon-800 font-semibold underline">rajsinghchouhan112@gmail.com</a></p>
+          <p><strong>Contact Hotline:</strong> <span className="font-semibold text-stone-900">+91 99265 39866</span></p>
           <p><strong>Response Turnaround:</strong> Acknowledgment within <strong>48 hours</strong>; complete resolution within <strong>30 days</strong>.</p>
         </div>
       </section>
@@ -283,7 +272,7 @@ export const TermsConditionsPage = () => (
           1. Acceptance of Terms
         </h2>
         <p>
-          Welcome to the official digital platform of <strong>Shagun Shine Cosmetics Private Limited</strong> (&quot;Shagun Shine&quot;, &quot;we&quot;, &quot;us&quot;). By browsing, creating an account, or purchasing from this website, you acknowledge that you are at least 18 years of age and agree to be bound by these legally enforceable Terms & Conditions.
+          Welcome to the official digital platform of <strong>SHAGUN SHINE COSMETICS</strong> (Proprietor: Rajkumar Singh Chouhan) (&quot;Shagun Shine&quot;, &quot;we&quot;, &quot;us&quot;). By browsing, creating an account, or purchasing from this website, you acknowledge that you are at least 18 years of age and agree to be bound by these legally enforceable Terms & Conditions.
         </p>
       </section>
 
@@ -308,7 +297,7 @@ export const TermsConditionsPage = () => (
           3. Cosmetic Safety & Patch Test Advisory
         </h2>
         <p>
-          Our formulations incorporate natural Ayurvedic botanicals, 24K gold foil, and active ingredients. Because individual skin types react differently to natural botanicals:
+          Our formulations incorporate natural Ayurvedic botanicals, precious cold-pressed oils, and active ingredients. Because individual skin types react differently to natural botanicals:
         </p>
         <div className="p-3 bg-amber-50/60 border border-amber-200 rounded-xl text-amber-900 text-xs">
           <strong>Mandatory Patch Test:</strong> Customers are advised to conduct a small patch test on the inner wrist or forearm prior to full facial or skin application. In the rare event of irritation or allergic redness, discontinue use immediately. Shagun Shine products are cosmetic beauty formulations and are not intended to diagnose, treat, or cure clinical medical diseases.
@@ -321,7 +310,7 @@ export const TermsConditionsPage = () => (
           4. Intellectual Property Rights
         </h2>
         <p>
-          All trademarks, royal trade dress, product names, formulations, graphics, design assets, and logos appearing on this website are the proprietary intellectual property of Shagun Shine Cosmetics Private Limited. Reproduction or commercial exploitation without prior written consent is strictly prohibited under the <em>Trade Marks Act, 1999</em> and <em>Copyright Act, 1957</em>.
+          All trademarks, royal trade dress, product names, formulations, graphics, design assets, and logos appearing on this website are the proprietary intellectual property of SHAGUN SHINE COSMETICS (Proprietor: Rajkumar Singh Chouhan). Reproduction or commercial exploitation without prior written consent is strictly prohibited under the <em>Trade Marks Act, 1999</em> and <em>Copyright Act, 1957</em>.
         </p>
       </section>
 
@@ -331,7 +320,7 @@ export const TermsConditionsPage = () => (
           5. Governing Law & Dispute Resolution
         </h2>
         <p>
-          These Terms of Service are governed by and construed in accordance with the substantive laws of the Republic of India. Any legal dispute, controversy, or claim arising out of or relating to this platform shall be subject to the exclusive jurisdiction of the competent civil courts situated at <strong>Gurugram / New Delhi, India</strong>.
+          These Terms of Service are governed by and construed in accordance with the substantive laws of the Republic of India. Any legal dispute, controversy, or claim arising out of or relating to this platform shall be subject to the exclusive jurisdiction of the competent civil courts situated at <strong>Indore, Madhya Pradesh, India</strong>.
         </p>
       </section>
     </div>

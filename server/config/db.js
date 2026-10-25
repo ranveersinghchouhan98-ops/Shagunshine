@@ -11,13 +11,7 @@ if (!fs.existsSync(dataDir)) {
 
 let db;
 try {
-  const Database = require('better-sqlite3');
-  db = new Database(dbPath, { verbose: null });
-  db.pragma('journal_mode = WAL');
-  db.pragma('foreign_keys = ON');
-  db.pragma('busy_timeout = 5000');
-} catch (err) {
-  // Fallback to built-in node:sqlite (Node 22+)
+  // Primary: Built-in SQLite in Node 22+ (Zero native compilation / zero Python dependencies)
   const { DatabaseSync } = require('node:sqlite');
   db = new DatabaseSync(dbPath);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
@@ -37,6 +31,17 @@ try {
       }
     };
   };
+} catch (err) {
+  try {
+    const Database = require('better-sqlite3');
+    db = new Database(dbPath, { verbose: null });
+    db.pragma('journal_mode = WAL');
+    db.pragma('foreign_keys = ON');
+    db.pragma('busy_timeout = 5000');
+  } catch (fallbackErr) {
+    console.error('Failed to initialize SQLite:', fallbackErr);
+    throw fallbackErr;
+  }
 }
 
 function initDatabase() {
@@ -244,6 +249,11 @@ function initDatabase() {
       refund_amount REAL DEFAULT 0,
       refund_transaction_id TEXT,
       timeline TEXT, -- JSON array of { status, timestamp, note, actor }
+      shiprocket_order_id TEXT,
+      shiprocket_shipment_id TEXT,
+      shiprocket_awb_code TEXT,
+      shiprocket_sync_status TEXT DEFAULT 'pending',
+      shiprocket_synced_at DATETIME,
       is_demo INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -450,14 +460,24 @@ function initDefaultSettings() {
     {
       key: 'store_profile',
       value: JSON.stringify({
-        storeName: 'Shagun Shine Cosmetics',
-        legalName: 'Shagun Shine Cosmetics Private Limited',
-        supportEmail: 'concierge@shagunshine.com',
-        supportPhone: '+91 98765 43210',
-        supportWhatsapp: '+91 98765 43210',
-        businessAddress: 'Palais Royale Arcade, Ground Floor, Altamount Road, South Mumbai, Maharashtra - 400026, India',
-        storeState: 'Maharashtra',
-        storeStateCode: '27',
+        storeName: 'SHAGUN SHINE COSMETICS',
+        legalName: 'RAJKUMAR SINGH CHOUHAN (Proprietor)',
+        ownerName: 'RAJKUMAR SINGH CHOUHAN',
+        fatherName: '',
+        pan: '',
+        gstin: '23BBVPC0623C1Z8',
+        udyamRegNo: 'UDYAM-MP-23-0310066',
+        labourRegNo: 'INDO260913SE002490',
+        supportEmail: 'rajsinghchouhan112@gmail.com',
+        supportPhone: '+91 99265 39866',
+        businessAddress: '45, Adarsh Maulik Nagar Road, Sukhliya (Near Surabhi Shoe Mart), Indore, Madhya Pradesh - 452003',
+        storeCity: 'Indore',
+        storeState: 'Madhya Pradesh',
+        storeStateCode: '23',
+        pincode: '452003',
+        bankName: 'UCO BANK',
+        bankIfsc: 'UCBA0002388',
+        bankAccountNo: '',
         currencySymbol: '₹',
         currencyCode: 'INR'
       })
@@ -465,13 +485,20 @@ function initDefaultSettings() {
     {
       key: 'gst_config',
       value: JSON.stringify({
-        gstin: '27AAACS1234F1Z8', // Configurable Business GSTIN
-        registeredState: 'Maharashtra',
-        stateCode: '27',
+        gstin: '23BBVPC0623C1Z8',
+        legalName: 'RAJKUMAR SINGH CHOUHAN',
+        tradeName: 'SHAGUN SHINE COSMETICS',
+        registeredState: 'Madhya Pradesh',
+        stateCode: '23',
+        city: 'Indore',
+        pincode: '452003',
+        address: 'Building No. 45, Adarsh Maulik Nagar Road, Nearby Landmark: Surabhi Shoe Mart, Sukhliya, Indore, Madhya Pradesh - 452003',
+        constitution: 'Proprietorship',
+        registrationType: 'Regular',
         defaultGSTRate: 18.0,
         defaultHSN: '33049990',
         isGstRegistered: true,
-        disclaimer: 'GST details configured here are used for invoice generation. Ensure verification by your certified Chartered Accountant before commercial deployment.'
+        disclaimer: 'Official GSTIN issued by Goods and Services Tax Network, Government of India.'
       })
     },
     {
@@ -479,26 +506,26 @@ function initDefaultSettings() {
       value: JSON.stringify({
         invoicePrefix: 'SS-INV-',
         nextInvoiceNumber: 1001,
-        termsNote: 'Goods once sold are covered under Shagun Shine 7-Day Replacement Policy. All disputes subject to Mumbai jurisdiction.'
+        termsNote: 'Goods once sold are covered under Shagun Shine 7-Day Replacement Policy. All disputes subject to Indore, Madhya Pradesh jurisdiction.'
       })
     },
     {
       key: 'payment_config',
       value: JSON.stringify({
         activeGateway: 'razorpay',
-        razorpayKeyId: 'rzp_test_TlJ5Nvk5CxSZ1H',
-        razorpayKeySecret: 'J6bJxGsMMrWOZMRXhLcaPyZr',
+        razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+        razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
         isCodEnabled: false,
         codExtraCharge: 0,
-        webhookSecret: 'shagun_webhook_secret_verification_key_99'
+        webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || ''
       })
     },
     {
       key: 'shipping_config',
       value: JSON.stringify({
         activeProvider: 'manual', // 'manual', 'delhivery', 'shiprocket'
-        defaultShippingFee: 99,
-        freeShippingThreshold: 999,
+        defaultShippingFee: 0,
+        freeShippingThreshold: 0,
         estimatedDaysMetro: '2-3 business days',
         estimatedDaysNonMetro: '4-5 business days',
         serviceablePincodesCount: 26000

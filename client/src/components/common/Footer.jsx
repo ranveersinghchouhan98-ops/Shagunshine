@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Mail, Phone, MapPin, ShieldCheck, Heart, ArrowRight, Share2, Globe, MessageCircle } from 'lucide-react';
+import { Sparkles, Mail, Phone, MapPin, ShieldCheck, Heart, ArrowRight } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
 export const Footer = () => {
@@ -10,7 +10,7 @@ export const Footer = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email.trim()) {
-      success('Thank you for subscribing! Check your inbox for exclusive 20% OFF coupon.');
+      success('Thank you for subscribing to Shagun Shine! Welcome to our inner circle.');
       setEmail('');
     }
   };
@@ -18,45 +18,37 @@ export const Footer = () => {
   return (
     <footer className="bg-stone-950 text-stone-300 pt-16 pb-8 border-t border-gold-500/20">
       {/* Brand Perks Strip */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 mb-12 border-b border-stone-800">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-          <div className="flex items-center gap-4 justify-center md:justify-start">
-            <div className="w-12 h-12 rounded-2xl bg-maroon-900/60 border border-gold-500/40 flex items-center justify-center shrink-0">
-              <Sparkles className="w-6 h-6 text-gold-400" />
-            </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 mb-10 border-b border-stone-800/80">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+          <div className="flex items-center gap-3 justify-center md:justify-start">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
             <div>
-              <h4 className="font-serif font-bold text-white text-sm">24K Gold & Ayurvedic Actives</h4>
-              <p className="text-xs text-stone-400 mt-0.5">Time-tested royal formulations</p>
+              <h4 className="font-serif text-xs font-semibold text-stone-200 tracking-wide uppercase">Ayurvedic Actives</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 font-light">Time-honored botanical alchemy</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 justify-center md:justify-start">
-            <div className="w-12 h-12 rounded-2xl bg-maroon-900/60 border border-gold-500/40 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-6 h-6 text-gold-400" />
-            </div>
+          <div className="flex items-center gap-3 justify-center md:justify-start">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <div>
-              <h4 className="font-serif font-bold text-white text-sm">100% Clean & Cruelty Free</h4>
-              <p className="text-xs text-stone-400 mt-0.5">Dermatologically tested & certified</p>
+              <h4 className="font-serif text-xs font-semibold text-stone-200 tracking-wide uppercase">Clean & Ethical</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 font-light">Cruelty-free & dermatologist tested</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 justify-center md:justify-start">
-            <div className="w-12 h-12 rounded-2xl bg-maroon-900/60 border border-gold-500/40 flex items-center justify-center shrink-0">
-              <Mail className="w-6 h-6 text-gold-400" />
-            </div>
+          <div className="flex items-center gap-3 justify-center md:justify-start">
+            <Mail className="w-4 h-4 text-amber-400 shrink-0" />
             <div>
-              <h4 className="font-serif font-bold text-white text-sm">Complimentary Shipping</h4>
-              <p className="text-xs text-stone-400 mt-0.5">Free luxury delivery above ₹999</p>
+              <h4 className="font-serif text-xs font-semibold text-stone-200 tracking-wide uppercase">White-Glove Shipping</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 font-light">Complimentary on all orders</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 justify-center md:justify-start">
-            <div className="w-12 h-12 rounded-2xl bg-maroon-900/60 border border-gold-500/40 flex items-center justify-center shrink-0">
-              <Heart className="w-6 h-6 text-gold-400" />
-            </div>
+          <div className="flex items-center gap-3 justify-center md:justify-start">
+            <Heart className="w-4 h-4 text-rose-400 shrink-0" />
             <div>
-              <h4 className="font-serif font-bold text-white text-sm">Effortless Returns</h4>
-              <p className="text-xs text-stone-400 mt-0.5">7-day hassle free return promise</p>
+              <h4 className="font-serif text-xs font-semibold text-stone-200 tracking-wide uppercase">Maison Guarantee</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 font-light">7-day seamless exchange care</p>
             </div>
           </div>
         </div>
@@ -83,7 +75,7 @@ export const Footer = () => {
               </div>
             </div>
             <p className="text-xs text-stone-300 leading-relaxed max-w-sm">
-              Shagune Shine Cosmetics blends royal luxury beauty with clean botanicals. Crafted with 24K gold flakes, pure floral actives, and velvet formulations for your eternal glow.
+              Shagune Shine Cosmetics blends royal luxury beauty with clean botanicals. Crafted with pure saffron, rare floral actives, and velvet formulations for your eternal glow.
             </p>
 
             <div className="pt-1 space-y-1.5 text-xs text-stone-300">
@@ -217,27 +209,15 @@ export const Footer = () => {
                 </Link>
               </li>
             </ul>
-
-            <div className="flex gap-2 text-stone-400 pt-2">
-              <a href="#" className="hover:text-gold-400 transition-colors p-2 bg-stone-900 rounded-lg" aria-label="Social">
-                <Share2 className="w-4 h-4" />
-              </a>
-              <a href="#" className="hover:text-gold-400 transition-colors p-2 bg-stone-900 rounded-lg" aria-label="Global">
-                <Globe className="w-4 h-4" />
-              </a>
-              <a href="#" className="hover:text-gold-400 transition-colors p-2 bg-stone-900 rounded-lg" aria-label="Chat">
-                <MessageCircle className="w-4 h-4" />
-              </a>
-            </div>
           </div>
         </div>
 
         {/* Copyright and Secure Badges */}
         <div className="pt-8 border-t border-stone-800/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p>© 2026 Shagun Shine Cosmetics Private Limited. All rights reserved.</p>
+          <p>© 2026 SHAGUN SHINE COSMETICS (Proprietor: Rajkumar Singh Chouhan). All rights reserved.</p>
           <div className="flex items-center gap-4 text-[11px] text-stone-400">
             <span>🛡️ 256-Bit SSL Encryption</span>
-            <span>💳 UPI • Cards • Net Banking • COD</span>
+            <span>💳 UPI • Debit/Credit Cards • Net Banking</span>
           </div>
         </div>
       </div>

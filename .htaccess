@@ -2,6 +2,15 @@
 # If running GoDaddy cPanel "Setup Node.js App", Phusion Passenger manages requests automatically.
 # If running static or reverse proxy, the rules below ensure smooth routing.
 
+# MIME Types for CSS and JS
+<IfModule mod_mime.c>
+  AddType text/css .css
+  AddType application/javascript .js
+  AddType application/json .json
+  AddType image/svg+xml .svg
+  AddType font/woff2 .woff2
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
@@ -9,12 +18,16 @@
   # Forward Authorization Header
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-  # If client/dist exists and is web root, serve directly; otherwise route to index.html
+  # Never rewrite asset files (css, js, images, fonts)
+  RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot|ico|json)$ [NC]
+  RewriteRule ^ - [L]
+
+  # Existing files and directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Route React Router Single Page App paths to index.html
+  # Route React Router SPA paths to index.html
   RewriteCond %{DOCUMENT_ROOT}/client/dist/index.html -f
   RewriteRule ^(.*)$ client/dist/index.html [L]
 

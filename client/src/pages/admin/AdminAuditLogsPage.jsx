@@ -11,6 +11,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import api from '../../api/apiClient';
 
 export const AdminAuditLogsPage = () => {
   const { addToast } = useToast();
@@ -22,8 +23,6 @@ export const AdminAuditLogsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedLog, setSelectedLog] = useState(null);
-
-  const token = localStorage.getItem('shagun_token');
 
   useEffect(() => {
     fetchLogs();
@@ -39,17 +38,14 @@ export const AdminAuditLogsPage = () => {
         search
       });
 
-      const res = await fetch(`http://localhost:5000/api/audit-logs?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get(`/audit-logs?${params.toString()}`);
       if (data.success) {
         setLogs(data.logs || []);
         setTotalPages(data.totalPages || 1);
         setTotalCount(data.total || 0);
       }
     } catch (err) {
-      addToast('Failed to fetch audit logs', 'error');
+      addToast(err.message || 'Failed to fetch audit logs', 'error');
     } finally {
       setLoading(false);
     }

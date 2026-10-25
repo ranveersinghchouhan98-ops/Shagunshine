@@ -1,9 +1,22 @@
+# MIME Types for CSS and JS
+<IfModule mod_mime.c>
+  AddType text/css .css
+  AddType application/javascript .js
+  AddType application/json .json
+  AddType image/svg+xml .svg
+  AddType font/woff2 .woff2
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
   # Handle Authorization Header for API calls if proxied
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # Never rewrite asset files (css, js, images, fonts)
+  RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot|ico|json)$ [NC]
+  RewriteRule ^ - [L]
 
   # Do not rewrite existing files or directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]

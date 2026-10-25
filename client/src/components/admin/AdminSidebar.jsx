@@ -40,7 +40,6 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
     { name: 'Orders', path: '/admin/orders', icon: ShoppingBag },
     { name: 'Returns & Refunds', path: '/admin/returns', icon: RotateCcw },
     { name: 'Customers', path: '/admin/customers', icon: Users },
-    { name: 'Coupons', path: '/admin/coupons', icon: Tag },
     { name: 'Reviews', path: '/admin/reviews', icon: MessageSquare },
     { name: 'Inventory', path: '/admin/inventory', icon: Boxes },
     { name: 'Banners & Hero', path: '/admin/banners', icon: Image },

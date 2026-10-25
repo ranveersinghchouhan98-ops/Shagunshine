@@ -1,6 +1,6 @@
 import { handleMockRequest } from './mockData';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+const API_BASE_URL = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
 
 class ApiClient {
   constructor(baseUrl) {
@@ -30,19 +30,35 @@ class ApiClient {
     let data;
     try {
       response = await fetch(`${this.baseUrl}${endpoint}`, config);
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('text/html')) {
+        throw new Error('Received HTML response instead of JSON API');
+      }
       data = await response.json().catch(() => ({}));
     } catch (networkError) {
-      if (!endpoint.includes('/auth/me')) {
-        console.warn(`[Backend Offline Fallback] Serving mock data for: ${options.method || 'GET'} ${endpoint}`);
+      if (!options.method || options.method === 'GET') {
+        if (!endpoint.includes('/auth/me')) {
+          console.warn(`[Backend Offline Fallback] Serving mock data for: GET ${endpoint}`);
+        }
+        return handleMockRequest(endpoint, 'GET', options.body);
       }
-      return handleMockRequest(endpoint, options.method || 'GET', options.body);
+      throw new Error(networkError.message || 'Cannot reach backend server. Please verify your connection.');
     }
 
     if (!response.ok) {
       if (response.status === 401 && endpoint.includes('/auth/me')) {
         localStorage.removeItem('shagun_token');
       }
+      if (!options.method || options.method === 'GET') {
+        return handleMockRequest(endpoint, 'GET', options.body);
+      }
       throw new Error(data.message || `Request failed with status ${response.status}`);
+    }
+
+    if (!options.method || options.method === 'GET') {
+      if (!data || !data.success) {
+        return handleMockRequest(endpoint, 'GET', options.body);
+      }
     }
 
     return data;

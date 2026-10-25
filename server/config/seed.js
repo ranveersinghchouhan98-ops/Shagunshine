@@ -665,54 +665,8 @@ function seedDatabase() {
     );
   });
 
-  // 4. Seed Coupons
-  const coupons = [
-    {
-      id: 'cpn_001',
-      code: 'SHINE20',
-      discount_type: 'percentage',
-      discount_value: 20,
-      min_spend: 1499,
-      max_discount: 800,
-      usage_limit: 500,
-      times_used: 48,
-      expiry_date: '2027-12-31',
-      is_active: 1
-    },
-    {
-      id: 'cpn_002',
-      code: 'GLOW500',
-      discount_type: 'flat',
-      discount_value: 500,
-      min_spend: 2499,
-      max_discount: 500,
-      usage_limit: 200,
-      times_used: 19,
-      expiry_date: '2027-12-31',
-      is_active: 1
-    },
-    {
-      id: 'cpn_003',
-      code: 'WELCOME10',
-      discount_type: 'percentage',
-      discount_value: 10,
-      min_spend: 999,
-      max_discount: 300,
-      usage_limit: 1000,
-      times_used: 120,
-      expiry_date: '2027-12-31',
-      is_active: 1
-    }
-  ];
-
-  const insertCoupon = db.prepare(`
-    INSERT INTO coupons (id, code, discount_type, discount_value, min_spend, max_discount, usage_limit, times_used, expiry_date, is_active)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  coupons.forEach(c => {
-    insertCoupon.run(c.id, c.code, c.discount_type, c.discount_value, c.min_spend, c.max_discount, c.usage_limit, c.times_used, c.expiry_date, c.is_active);
-  });
+  // 4. Seed Coupons (Disabled - no coupons)
+  const coupons = [];
 
   // 5. Seed Reviews
   const reviews = [

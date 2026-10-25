@@ -3,9 +3,9 @@ export const MOCK_CATEGORIES = [
     id: 'cat_skincare',
     name: 'Skincare',
     slug: 'skincare',
-    description: 'Luminous serums, nourishing creams, and revitalizing elixirs infused with gold dust and botanical extracts.',
+    description: 'Luminous serums, nourishing creams, and revitalizing elixirs infused with botanical extracts and botanical extracts.',
     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&auto=format&fit=crop&q=80',
-    subcategories: ['Serums & Elixirs', 'Moisturizers & Creams', 'Cleansers & Toners', 'Face Masks & Peels', 'Sun Protection']
+    subcategories: ['Serums & Treatments', 'Moisturizers & Creams', 'Cleansers & Toners', 'Face Masks & Peels', 'Sun Protection']
   },
   {
     id: 'cat_makeup',
@@ -45,7 +45,7 @@ export const MOCK_BANNERS = [
   {
     id: 'bnr_001',
     title: 'The Golden Radiance Collection',
-    subtitle: 'Unlock Luminous, Lit-From-Within Beauty with 24K Pure Gold & Ayurvedic Actives',
+    subtitle: 'Unlock Luminous, Lit-From-Within Beauty with Kashmiri Saffron & Ayurvedic Actives',
     tagline: 'FESTIVE LUXURY EDIT',
     cta_text: 'Explore The Collection',
     cta_link: '/shop?category=skincare',
@@ -86,17 +86,17 @@ export const MOCK_BANNERS = [
 export const MOCK_PRODUCTS = [
   {
     id: 'prod_001',
-    name: '24K Gold Radiant Youth Elixir Serum',
-    slug: '24k-gold-radiant-youth-elixir-serum',
+    name: 'Radiant Saffron Youth Glow Serum',
+    slug: 'radiant-saffron-youth-glow-serum',
     sku: 'SS-SK-001',
     category_id: 'cat_skincare',
-    subcategory: 'Serums & Elixirs',
+    subcategory: 'Serums & Treatments',
     price: 2499,
     discount_price: 1899,
     stock_quantity: 45,
-    description: 'An opulent anti-aging facial elixir infused with pure 24K gold flakes, Kashmiri Saffron, and concentrated Hyaluronic Acid. Instantly restores skin luminosity, boosts collagen synthesis, and smooths fine lines with a non-greasy satin finish.',
-    short_description: 'Pure 24K gold infused radiance serum with Kashmiri Saffron and Hyaluronic Acid.',
-    ingredients: 'Aqua, 24K Pure Gold Flakes, Crocus Sativus (Saffron) Extract, Sodium Hyaluronate, Niacinamide (5%), Rosa Damascena Flower Water, Centella Asiatica, Peptides Complex, Glycerin, Phenoxyethanol.',
+    description: 'An opulent anti-aging facial serum infused with pure Botanical Extracts, Kashmiri Saffron, and concentrated Hyaluronic Acid. Instantly restores skin luminosity, boosts collagen synthesis, and smooths fine lines with a non-greasy satin finish.',
+    short_description: 'Pure Saffron Radiance infused radiance serum with Kashmiri Saffron and Hyaluronic Acid.',
+    ingredients: 'Aqua, Pure Saffron Extracts, Crocus Sativus (Saffron) Extract, Sodium Hyaluronate, Niacinamide (5%), Rosa Damascena Flower Water, Centella Asiatica, Peptides Complex, Glycerin, Phenoxyethanol.',
     how_to_use: 'Dispense 3-4 drops onto cleansed palms. Gently press into face, neck, and décolletage in upward circular motions. Use morning and night prior to your moisturizer.',
     skin_type: 'All Skin Types',
     benefits: ['Instant Golden Glow', 'Deep Cellular Hydration', 'Collagen Boost & Plumping', 'Cruelty Free & Paraben Free'],
@@ -328,8 +328,8 @@ export const MOCK_PRODUCTS = [
   },
   {
     id: 'prod_009',
-    name: 'Bhringraj & Red Onion Royal Hair Growth Elixir',
-    slug: 'bhringraj-red-onion-royal-hair-growth-elixir',
+    name: 'Bhringraj & Red Onion Royal Hair Growth Serum',
+    slug: 'bhringraj-red-onion-royal-hair-growth-serum',
     sku: 'SS-HC-001',
     category_id: 'cat_haircare',
     subcategory: 'Hair Oils & Serums',
@@ -841,7 +841,7 @@ export const MOCK_PRODUCTS = [
     price: 1499,
     discount_price: 600,
     stock_quantity: 50,
-    description: 'Kelyn Ultimate Amber Eau De Parfum is a golden elixir of resplendent warmth. Radiant amber crystals intertwine with delicate saffron and balsamic woods for supreme sophistication.',
+    description: 'Kelyn Ultimate Amber Eau De Parfum is a radiant essence of resplendent warmth. Radiant amber crystals intertwine with delicate saffron and balsamic woods for supreme sophistication.',
     short_description: 'Opulent amber and saffron Eau De Parfum with balsamic wood warmth.',
     ingredients: 'Golden Amber, Kashmiri Saffron, Guaiac Wood, Benzoin Resin.',
     how_to_use: 'Mist lightly over pulse points and fabric for an enduring aura.',
@@ -1289,8 +1289,8 @@ export const MOCK_PRODUCTS = [
     price: 499,
     discount_price: 200,
     stock_quantity: 50,
-    description: 'Der Duft Bouncy Smooth Hair Elixir is engineered with precision German formulation. Packed with cold-pressed Avocado Oil and Extra Virgin Olive Oil to deliver instant mirror-like shine and velvety softness.',
-    short_description: 'German engineered bouncy smooth shine elixir with Avocado and Olive oils.',
+    description: 'Der Duft Bouncy Smooth hair serum is engineered with precision German formulation. Packed with cold-pressed Avocado Oil and Extra Virgin Olive Oil to deliver instant mirror-like shine and velvety softness.',
+    short_description: 'German engineered bouncy smooth shine serum with Avocado and Olive oils.',
     ingredients: 'Persea Gratissima (Avocado) Oil, Olea Europaea (Olive) Fruit Oil, Vitamin E, Dimethiconol.',
     how_to_use: 'Rub 2-3 drops between palms and run through mid-lengths to ends of dry or damp hair.',
     skin_type: 'All Skin Types',
@@ -2680,8 +2680,8 @@ export const MOCK_PRODUCTS = [
   },
   {
     id: 'prod_fk_081',
-    name: 'Pattaya Queen 24K Pure Gold Radiance Face Elixir (Thailand Edition 30ml)',
-    slug: 'pattaya-queen-24k-pure-gold-radiance-face-elixir-thailand-edition-30ml-81',
+    name: 'Pattaya Queen Botanical Radiance Face Serum (Thailand Edition 30ml)',
+    slug: 'pattaya-queen-botanical-radiance-face-serum-thailand-edition-30ml-81',
     sku: 'SS-FK-081',
     category_id: 'cat_skincare',
     subcategory: 'Serums & Treatments',
@@ -2689,9 +2689,9 @@ export const MOCK_PRODUCTS = [
     price: 1099,
     discount_price: 440,
     stock_quantity: 50,
-    description: 'Pattaya Queen 24K Gold Elixir is enriched with genuine suspended gold leaf flakes and botanical peptides. Stimulates collagen synthesis, minimizes fine lines, and imparts a majestic royal glow.',
+    description: 'Pattaya Queen Radiance Serum is enriched with genuine suspended gold leaf flakes and botanical peptides. Stimulates collagen synthesis, minimizes fine lines, and imparts a majestic royal glow.',
     short_description: 'Opulent 24K pure gold radiance elixir for firming and majestic glow.',
-    ingredients: 'Pure 24K Gold Leaf Flakes, Copper Peptides, Saffron Extract, Hyaluronic Acid.',
+    ingredients: 'Pure Saffron Radiance Leaf Flakes, Copper Peptides, Saffron Extract, Hyaluronic Acid.',
     how_to_use: 'Warm 3 drops between palms and gently press into cleansed face and neck.',
     skin_type: 'All Skin Types',
     benefits: ["Pure 24K Genuine Gold Flakes", "Restores Firmness & Elasticity", "Instantly Transforms Dull Skin", "Opulent Royal Radiance"],
@@ -2829,7 +2829,7 @@ export const MOCK_PRODUCTS = [
     price: 6999,
     discount_price: 5499,
     stock_quantity: 15,
-    description: 'The crowning bridal beauty ritual. Includes our 24K Gold Youth Elixir (30ml), Kumkumadi Night Cream (50g), Royal Silk Lipstick in Sindoor Red, Noor-e-Gulab Perfume (50ml), and a Rose Quartz Gua Sha.',
+    description: 'The crowning bridal beauty ritual. Includes our Radiant Saffron Youth Serum (30ml), Kumkumadi Night Cream (50g), Royal Silk Lipstick in Sindoor Red, Noor-e-Gulab Perfume (50ml), and a Rose Quartz Gua Sha.',
     short_description: 'Curated 5-piece royal bridal collection in velvet gold-embossed keepsake trunk.',
     ingredients: 'Complete skincare & makeup ensemble with genuine Ayurvedic & botanical actives.',
     how_to_use: 'Follow the included 21-day Bridal Radiance Booklet for step-by-step beauty protocol.',
@@ -2857,7 +2857,7 @@ export const MOCK_PRODUCTS = [
     price: 4199,
     discount_price: 3299,
     stock_quantity: 40,
-    description: 'Your effortless 3-step morning skincare routine: Rose & Pearl Cleanser (150ml), 24K Gold Radiant Serum (30ml), and Dewy Velvet SPF 50 Sunscreen (50g).',
+    description: 'Your effortless 3-step morning skincare routine: Rose & Pearl Cleanser (150ml), Radiant Saffron Serum (30ml), and Dewy Velvet SPF 50 Sunscreen (50g).',
     short_description: 'Essential 3-step morning glow regime: Cleanse, Treat, and Protect.',
     ingredients: 'Detailed on individual product packaging.',
     how_to_use: 'Step 1: Cleanse with Rose gel. Step 2: Apply 3 drops of Gold Serum. Step 3: Seal with Dewy Sun Fluid.',
@@ -2912,7 +2912,7 @@ export const MOCK_PRODUCTS = [
     slug: 'niacinamide-zinc-clarity-serum',
     sku: 'SS-SK-005',
     category_id: 'cat_skincare',
-    subcategory: 'Serums & Elixirs',
+    subcategory: 'Serums & Treatments',
     price: 1399,
     discount_price: 999,
     stock_quantity: 6,
@@ -3003,7 +3003,7 @@ export const MOCK_REVIEWS = [
     author_name: 'Ananya Patel',
     rating: 5,
     title: 'Miraculous gold serum! Worth every penny!',
-    comment: 'I have been using this 24K Gold Youth Elixir for 3 weeks and the difference in my skin texture and radiance is unbelievable! It absorbs effortlessly without stickiness.',
+    comment: 'I have been using this Radiant Saffron Youth Serum for 3 weeks and the difference in my skin texture and radiance is unbelievable! It absorbs effortlessly without stickiness.',
     status: 'approved'
   },
   {
@@ -3040,17 +3040,13 @@ export const MOCK_SETTINGS = {
   support_email: 'contact@shagunshine.com',
   support_phone: '+91 9876543210',
   currency_symbol: '₹',
-  free_shipping_threshold: 999,
-  standard_shipping_rate: 99,
+  free_shipping_threshold: 0,
+  standard_shipping_rate: 0,
   tax_rate_percentage: 18,
   store_address: 'Luxury Galleria, Road No. 36, Jubilee Hills, Hyderabad - 500033'
 };
 
-export const MOCK_COUPONS = [
-  { code: 'SHINE20', discount_type: 'percentage', discount_value: 20, min_spend: 1499 },
-  { code: 'GLOW500', discount_type: 'flat', discount_value: 500, min_spend: 2499 },
-  { code: 'WELCOME10', discount_type: 'percentage', discount_value: 10, min_spend: 999 }
-];
+export const MOCK_COUPONS = [];
 
 export function handleMockRequest(endpoint, method = 'GET', body = null) {
   const url = new URL(endpoint, 'http://localhost');
@@ -3130,12 +3126,36 @@ export function handleMockRequest(endpoint, method = 'GET', body = null) {
   const productSlugMatch = path.match(/^\/(?:api\/)?products\/(?:slug\/)?([^\/]+)$/);
   if (productSlugMatch) {
     const identifier = productSlugMatch[1];
-    const product = MOCK_PRODUCTS.find(p => p.slug === identifier || p.id === identifier);
-    if (product) {
+    const index = MOCK_PRODUCTS.findIndex(p => p.slug === identifier || p.id === identifier);
+
+    if (method === 'PUT' && body) {
+      let parsed = {};
+      try { parsed = typeof body === 'string' ? JSON.parse(body) : body; } catch (e) {}
+      if (index !== -1) {
+        MOCK_PRODUCTS[index] = { ...MOCK_PRODUCTS[index], ...parsed };
+        return { success: true, message: 'Product updated successfully!', product: MOCK_PRODUCTS[index] };
+      }
+    }
+
+    if (index !== -1) {
+      const product = MOCK_PRODUCTS[index];
       const related = MOCK_PRODUCTS.filter(p => p.category_id === product.category_id && p.id !== product.id).slice(0, 4);
       return { success: true, product, relatedProducts: related };
     }
     return { success: true, product: MOCK_PRODUCTS[0], relatedProducts: [] };
+  }
+
+  // Handle product creation in mock mode
+  if ((path === '/products' || path === '/api/products') && method === 'POST' && body) {
+    let parsed = {};
+    try { parsed = typeof body === 'string' ? JSON.parse(body) : body; } catch (e) {}
+    const newProd = {
+      ...parsed,
+      id: 'prod_' + Date.now(),
+      slug: (parsed.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    };
+    MOCK_PRODUCTS.unshift(newProd);
+    return { success: true, message: 'Product created successfully!', product: newProd };
   }
 
   // 6. Reviews

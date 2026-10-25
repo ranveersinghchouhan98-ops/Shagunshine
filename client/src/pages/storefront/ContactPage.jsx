@@ -45,7 +45,7 @@ export const ContactPage = () => {
               </div>
               <div>
                 <span className="text-xs font-bold text-stone-900 block">Customer Hotline & WhatsApp</span>
-                <span className="text-xs text-stone-600 font-semibold">+91 90984 39910</span>
+                <span className="text-xs text-stone-600 font-semibold">+91 99265 39866</span>
               </div>
             </div>
 
@@ -54,8 +54,8 @@ export const ContactPage = () => {
                 <Mail className="w-4 h-4 text-maroon-700" />
               </div>
               <div>
-                <span className="text-xs font-bold text-stone-900 block">Email Inquiries</span>
-                <span className="text-xs text-stone-600">contact@shagunshine.com / care@shagunshine.com</span>
+                <span className="text-xs font-bold text-stone-900 block">Official Inquiries Email</span>
+                <span className="text-xs text-stone-600">rajsinghchouhan112@gmail.com</span>
               </div>
             </div>
 
@@ -79,9 +79,11 @@ export const ContactPage = () => {
             <div className="flex items-start gap-3.5 text-xs text-stone-600">
               <MapPin className="w-4 h-4 text-maroon-700 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-stone-900 block font-serif">Shagune Shine Luxury Store • Indore</strong>
-                <p className="mt-0.5">45, Aadharsh Maulik Nagar, near by Hira Nagar Police Station, Sukhliya, Indore</p>
-                <p className="text-[11px] text-maroon-700 font-semibold mt-1">Makeup • Skincare • Fragrances • Luxury Brands</p>
+                <strong className="text-stone-900 block font-serif">SHAGUN SHINE COSMETICS • Indore Establishment</strong>
+                <p className="mt-0.5">45, Adarsh Maulik Nagar Road, Sukhliya (Near Surabhi Shoe Mart), Indore, Madhya Pradesh - 452003</p>
+                <p className="text-[11px] text-stone-500 mt-1">
+                  GSTIN: <span className="font-mono text-stone-800 font-semibold">23BBVPC0623C1Z8</span> | UDYAM: <span className="font-mono text-stone-800 font-semibold">UDYAM-MP-23-0310066</span>
+                </p>
               </div>
             </div>
 

@@ -75,7 +75,7 @@ export const HomePage = () => {
       avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
       rating: 5,
       comment:
-        'The 24K Gold Youth Elixir has transformed my daily skincare routine. It provides an ethereal glow without any greasy feeling. True luxury craftsmanship!'
+        'The Radiant Youth Serum has transformed my daily skincare routine. It provides an ethereal glow without any greasy feeling. True luxury craftsmanship!'
     },
     {
       name: 'Natasha Singhania',
@@ -96,7 +96,7 @@ export const HomePage = () => {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-16">
+    <div className="space-y-10 sm:space-y-14 pb-16">
       {/* 1. Hero Banner Carousel */}
       {banners.length > 0 && (
         <section className="relative overflow-hidden bg-stone-900">
@@ -200,54 +200,48 @@ export const HomePage = () => {
         </section>
       )}
 
-      {/* 2. Brand Trust Strip */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 bg-white rounded-2xl p-6 sm:p-8 border border-gold-200/50 shadow-soft">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center shrink-0 text-maroon-800">
-              <Sparkles className="w-5 h-5 text-gold-600" />
+      {/* 2. Brand Assurance Strip */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 relative z-20">
+        <div className="bg-white/95 backdrop-blur-md rounded-xl p-4 sm:p-5 border border-stone-200/80 shadow-soft">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 divide-y lg:divide-y-0 lg:divide-x divide-stone-200/70 text-center">
+            <div className="flex items-center justify-center gap-3 px-3 py-1">
+              <Sparkles className="w-4 h-4 text-amber-700 shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-semibold tracking-wide text-stone-900 uppercase">Botanical Actives</h4>
+                <p className="text-[11px] text-stone-500 font-light">Ayurvedic radiance serums</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-stone-900">24K Pure Gold Dust</h4>
-              <p className="text-[11px] text-stone-500">Luminous Ayurvedic radiance</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center shrink-0 text-maroon-800">
-              <Leaf className="w-5 h-5 text-emerald-600" />
+            <div className="flex items-center justify-center gap-3 px-3 py-1 pt-3 lg:pt-1">
+              <Leaf className="w-4 h-4 text-emerald-700 shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-semibold tracking-wide text-stone-900 uppercase">Clean & Ethical</h4>
+                <p className="text-[11px] text-stone-500 font-light">100% cruelty & paraben free</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-stone-900">100% Cruelty Free</h4>
-              <p className="text-[11px] text-stone-500">Ethical & paraben-free</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center shrink-0 text-maroon-800">
-              <Truck className="w-5 h-5 text-gold-600" />
+            <div className="flex items-center justify-center gap-3 px-3 py-1 pt-3 lg:pt-1">
+              <Truck className="w-4 h-4 text-stone-700 shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-semibold tracking-wide text-stone-900 uppercase">White Glove Delivery</h4>
+                <p className="text-[11px] text-stone-500 font-light">Complimentary on all orders</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-stone-900">Free Luxury Delivery</h4>
-              <p className="text-[11px] text-stone-500">On all orders above ₹999</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center shrink-0 text-maroon-800">
-              <Award className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-stone-900">Dermatologist Tested</h4>
-              <p className="text-[11px] text-stone-500">Safe for sensitive skin</p>
+            <div className="flex items-center justify-center gap-3 px-3 py-1 pt-3 lg:pt-1">
+              <Award className="w-4 h-4 text-amber-700 shrink-0" />
+              <div className="text-left">
+                <h4 className="text-xs font-semibold tracking-wide text-stone-900 uppercase">Dermatologist Tested</h4>
+                <p className="text-[11px] text-stone-500 font-light">Formulated for sensitive skin</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* 3. Shop by Category Highlights */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-maroon-800">
             Curated Formulations
           </span>
@@ -364,47 +358,47 @@ export const HomePage = () => {
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-stone-950 via-maroon-950 to-stone-900 text-white border border-gold-500/30 shadow-luxury">
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center">
             <div className="p-8 sm:p-12 lg:p-16 space-y-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-xs font-semibold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-                <span>The Imperial Bridal Box</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-800/80 border border-stone-700 text-amber-200 text-[10px] font-semibold uppercase tracking-[0.25em]">
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                <span>The Imperial Bridal Trunk</span>
               </div>
 
-              <h2 className="font-serif text-3xl sm:text-5xl font-bold leading-tight">
+              <h2 className="font-serif text-3xl sm:text-5xl font-normal leading-tight text-stone-100">
                 Gift The Eternal Glow of Royalty
               </h2>
 
-              <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
-                Encased in a hand-crafted velvet keepsake trunk adorned with gold foiling. Includes our signature 24K Gold Radiant Serum, Kumkumadi Miracle Night Cream, Royal Velvet Sindoor Lipstick, and Noor-e-Gulab Perfume.
+              <p className="text-stone-300 text-sm leading-relaxed font-light">
+                Encased in a hand-crafted velvet keepsake trunk adorned with gold foiling. Includes our signature Radiant Saffron Serum, Kumkumadi Miracle Night Cream, Royal Velvet Sindoor Lipstick, and Noor-e-Gulab Perfume.
               </p>
 
               <div className="flex items-baseline gap-4 pt-2">
-                <span className="text-3xl sm:text-4xl font-serif font-bold text-gold-300">₹5,499</span>
-                <span className="text-lg text-stone-400 line-through">₹6,999</span>
-                <span className="bg-emerald-600/80 text-white text-xs font-bold px-2.5 py-1 rounded-md">Save ₹1,500</span>
+                <span className="text-3xl sm:text-4xl font-serif text-amber-200">₹5,499</span>
+                <span className="text-base text-stone-400 line-through font-light">₹6,999</span>
+                <span className="text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full bg-stone-800 border border-stone-700 text-amber-300">Save ₹1,500</span>
               </div>
 
-              <div className="pt-4 flex flex-wrap gap-4">
+              <div className="pt-2 flex flex-wrap gap-4 items-center">
                 <Link
                   to="/product/the-imperial-bridal-radiance-box"
-                  className="px-8 py-3.5 rounded-full bg-gold-500 hover:bg-gold-600 text-stone-950 font-bold text-xs uppercase tracking-wider shadow-glow transition-all flex items-center gap-2"
+                  className="px-7 py-3 rounded-full bg-stone-100 hover:bg-white text-stone-900 font-semibold text-xs uppercase tracking-[0.2em] transition-all flex items-center gap-2 group"
                 >
                   <span>Claim Bridal Trunk</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
                 <Link
                   to="/shop?category=combos-gift-sets"
-                  className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold uppercase tracking-wider border border-white/20 transition-colors"
+                  className="px-6 py-3 rounded-full bg-transparent hover:bg-white/10 text-stone-300 hover:text-white text-xs font-semibold uppercase tracking-[0.2em] border border-stone-700 transition-colors"
                 >
                   All Gift Sets
                 </Link>
               </div>
             </div>
 
-            <div className="relative h-72 sm:h-96 lg:h-full min-h-[380px] overflow-hidden">
+            <div className="relative h-72 sm:h-96 lg:h-full min-h-[420px] overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=1000&auto=format&fit=crop&q=85"
                 alt="Imperial Bridal Box"
-                className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-1000"
               />
             </div>
           </div>
@@ -413,43 +407,43 @@ export const HomePage = () => {
 
       {/* 5.5 Flagship Boutique & Store Experience */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16">
-        <div className="relative rounded-3xl overflow-hidden border border-gold-300/40 shadow-luxury bg-gradient-to-r from-blush-50 via-white to-blush-100 p-8 sm:p-12">
+        <div className="relative rounded-3xl overflow-hidden border border-stone-200/80 shadow-soft bg-[#FAF7F5] p-8 sm:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="space-y-5">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-maroon-100 border border-gold-400 text-maroon-800 text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-gold-600" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-900 text-stone-200 text-[10px] font-semibold uppercase tracking-[0.25em]">
+                <Sparkles className="w-3 h-3 text-amber-300" />
                 <span>Indore Flagship Boutique</span>
               </div>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 leading-tight">
+              <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 font-normal leading-tight">
                 Experience Royal Beauty in Person
               </h2>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Step into our luxury beauty lounge to explore our signature formulations. Discover our bespoke finishes in <span className="font-semibold text-maroon-800">Velvet Matte</span>, <span className="font-semibold text-maroon-800">Satin Glow</span>, and <span className="font-semibold text-maroon-800">Shimmer Dust</span> crafted for royal radiance.
+              <p className="text-sm text-stone-600 leading-relaxed font-light">
+                Step into our sensory beauty lounge to explore our signature formulations. Discover our bespoke finishes in <span className="font-semibold text-stone-900">Velvet Matte</span>, <span className="font-semibold text-stone-900">Satin Glow</span>, and <span className="font-semibold text-stone-900">Shimmer Dust</span> crafted for royal radiance.
               </p>
 
-              <div className="pt-2 space-y-2.5 text-xs text-stone-700">
-                <div className="flex items-center gap-2.5 font-semibold text-maroon-800">
-                  <span className="w-7 h-7 rounded-full bg-maroon-100 flex items-center justify-center text-maroon-800">📞</span>
-                  <span>Customer Care: +91 90984 39910</span>
+              <div className="pt-2 space-y-2.5 text-xs text-stone-700 font-light">
+                <div className="flex items-center gap-2.5 font-medium text-stone-900">
+                  <span className="w-7 h-7 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-700">📞</span>
+                  <span>Customer Care & Concierge: +91 90984 39910</span>
                 </div>
                 <div className="flex items-start gap-2.5 text-stone-600">
-                  <span className="w-7 h-7 rounded-full bg-gold-100 flex items-center justify-center text-gold-700 shrink-0">📍</span>
-                  <span>45, Aadharsh Maulik Nagar, near by Hira Nagar Police Station, Sukhliya, Indore</span>
+                  <span className="w-7 h-7 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-700 shrink-0">📍</span>
+                  <span className="pt-0.5">45, Aadharsh Maulik Nagar, near by Hira Nagar Police Station, Sukhliya, Indore</span>
                 </div>
               </div>
 
-              <div className="pt-3">
+              <div className="pt-2">
                 <Link
                   to="/shop"
-                  className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-maroon-700 via-maroon-800 to-maroon-900 text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-glow-pink transition-all"
+                  className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold uppercase tracking-[0.2em] shadow-sm transition-all"
                 >
-                  <span>Explore Collections</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Explore Atelier</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
 
-            <div className="relative rounded-2xl overflow-hidden shadow-xl border-2 border-gold-400/50">
+            <div className="relative rounded-2xl overflow-hidden shadow-md border border-stone-200">
               <img
                 src="/brand-signboard.jpg"
                 alt="Shagune Shine Cosmetics Flagship Store"
@@ -461,44 +455,44 @@ export const HomePage = () => {
       </section>
 
       {/* 6. Customer Testimonials */}
-      <section className="bg-ivory-100/70 py-16 sm:py-20 border-y border-gold-200/50">
+      <section className="bg-stone-50/60 py-16 sm:py-20 border-y border-stone-200/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-maroon-800">
-              Voices of Splendor
+            <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-stone-500">
+              Patron Reviews
             </span>
-            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-stone-900 mt-1">
+            <h2 className="font-serif text-2xl sm:text-3xl font-normal text-stone-900 mt-1">
               Loved by Connoisseurs & Experts
             </h2>
-            <div className="w-16 h-0.5 bg-gold-500 mx-auto mt-3" />
+            <div className="w-12 h-px bg-stone-300 mx-auto mt-3" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {testimonials.map((t, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-2xl p-6 sm:p-8 border border-gold-200/60 shadow-soft flex flex-col justify-between"
+                className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200/80 shadow-sm flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center text-amber-400 mb-4">
+                  <div className="flex items-center text-amber-600 mb-4 gap-0.5">
                     {[...Array(t.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
+                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-stone-700 text-sm leading-relaxed italic">
+                  <p className="text-stone-700 text-sm leading-relaxed italic font-light">
                     "{t.comment}"
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3.5 mt-6 pt-6 border-t border-stone-100">
+                <div className="flex items-center gap-3 mt-6 pt-5 border-t border-stone-100">
                   <img
                     src={t.avatar}
                     alt={t.name}
-                    className="w-11 h-11 rounded-full object-cover border border-gold-400"
+                    className="w-10 h-10 rounded-full object-cover border border-stone-200"
                   />
                   <div>
-                    <h4 className="text-sm font-bold text-stone-900">{t.name}</h4>
-                    <p className="text-[11px] text-stone-500">{t.role}</p>
+                    <h4 className="text-xs font-semibold text-stone-900 uppercase tracking-wider">{t.name}</h4>
+                    <p className="text-[10px] text-stone-400 font-light">{t.role}</p>
                   </div>
                 </div>
               </div>

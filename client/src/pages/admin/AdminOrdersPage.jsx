@@ -37,6 +37,25 @@ export const AdminOrdersPage = () => {
   const [newDeliveryDate, setNewDeliveryDate] = useState('');
 
   const { success, error } = useToast();
+  const [syncingOrderId, setSyncingOrderId] = useState(null);
+
+  const handleSyncShiprocket = async (orderId) => {
+    setSyncingOrderId(orderId);
+    try {
+      const res = await api.post(`/orders/${orderId}/sync-shiprocket`);
+      if (res.success) {
+        success(res.message);
+        fetchOrders();
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder(res.order);
+        }
+      }
+    } catch (err) {
+      error(err.message || 'Failed to dispatch order to Shiprocket.');
+    } finally {
+      setSyncingOrderId(null);
+    }
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -205,10 +224,33 @@ export const AdminOrdersPage = () => {
                   </td>
 
                   <td className="py-3.5 px-4 font-mono text-[11px] text-stone-600">
-                    {ord.tracking_number || <span className="text-stone-400">Pending</span>}
+                    <div>{ord.tracking_number || <span className="text-stone-400">Pending</span>}</div>
+                    {ord.shiprocket_sync_status === 'synced' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded mt-0.5">
+                        <CheckCircle2 className="w-3 h-3" /> Shiprocket
+                      </span>
+                    ) : ord.shiprocket_sync_status === 'failed' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] text-rose-700 font-bold bg-rose-50 px-1.5 py-0.5 rounded mt-0.5">
+                        SR Error
+                      </span>
+                    ) : null}
                   </td>
 
-                  <td className="py-3.5 px-4 text-right space-x-2">
+                  <td className="py-3.5 px-4 text-right space-x-1.5">
+                    {ord.shiprocket_sync_status !== 'synced' && (
+                      <button
+                        onClick={() => handleSyncShiprocket(ord.id)}
+                        disabled={syncingOrderId === ord.id}
+                        className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition-colors disabled:opacity-50"
+                        title="Dispatch to Shiprocket"
+                      >
+                        {syncingOrderId === ord.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Truck className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
                     <button
                       onClick={() => setSelectedOrder(ord)}
                       className="p-1.5 rounded-lg text-stone-500 hover:text-maroon-800 hover:bg-stone-100 transition-colors"
@@ -221,7 +263,7 @@ export const AdminOrdersPage = () => {
                       className="p-1.5 rounded-lg text-stone-500 hover:text-gold-700 hover:bg-stone-100 transition-colors"
                       title="Update Shipment Status"
                     >
-                      <Truck className="w-4 h-4" />
+                      <Edit2 className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>
@@ -260,6 +302,51 @@ export const AdminOrdersPage = () => {
                 <p>{selectedOrder.shipping_address?.addressLine1}</p>
                 <p>{selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.state} - {selectedOrder.shipping_address?.postalCode}</p>
               </div>
+            </div>
+
+            {/* Shiprocket Logistics Integration */}
+            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <strong className="text-stone-900 flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5 text-gold-700" />
+                    Shiprocket Automated Fulfillment:
+                  </strong>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    selectedOrder.shiprocket_sync_status === 'synced'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : selectedOrder.shiprocket_sync_status === 'failed'
+                      ? 'bg-rose-100 text-rose-800'
+                      : 'bg-stone-200 text-stone-700'
+                  }`}>
+                    {selectedOrder.shiprocket_sync_status || 'Pending Sync'}
+                  </span>
+                </div>
+                {selectedOrder.shiprocket_order_id && (
+                  <div className="text-stone-600 mt-1 space-x-2">
+                    <span>SR Order ID: <code className="font-mono text-stone-900 font-bold">{selectedOrder.shiprocket_order_id}</code></span>
+                    {selectedOrder.shiprocket_awb_code && (
+                      <span>• AWB: <code className="font-mono text-stone-900 font-bold">{selectedOrder.shiprocket_awb_code}</code></span>
+                    )}
+                    {selectedOrder.shiprocket_synced_at && (
+                      <span className="text-[10px] text-stone-400 block sm:inline">• Synced: {new Date(selectedOrder.shiprocket_synced_at).toLocaleString()}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                disabled={syncingOrderId === selectedOrder.id}
+                onClick={() => handleSyncShiprocket(selectedOrder.id)}
+                className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+              >
+                {syncingOrderId === selectedOrder.id ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Truck className="w-3.5 h-3.5" />
+                )}
+                <span>{selectedOrder.shiprocket_sync_status === 'synced' ? 'Re-sync Shiprocket' : 'Dispatch to Shiprocket'}</span>
+              </button>
             </div>
 
             {/* Items */}

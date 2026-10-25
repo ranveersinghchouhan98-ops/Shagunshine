@@ -66,20 +66,20 @@ export const ProductCard = ({ product, onQuickView }) => {
         </Link>
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+        <div className="absolute top-3 left-3 flex flex-col gap-1 z-10 pointer-events-none">
           {product.is_best_seller === 1 && (
-            <span className="inline-flex items-center gap-1 bg-maroon-900 text-gold-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md">
-              <Sparkles className="w-2.5 h-2.5" />
-              Best Seller
+            <span className="inline-flex items-center gap-1 bg-stone-900/90 text-amber-200 text-[9px] font-medium uppercase tracking-[0.2em] px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm">
+              <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+              Iconic
             </span>
           )}
           {product.is_new_arrival === 1 && (
-            <span className="bg-gold-500 text-stone-900 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md">
+            <span className="bg-white/90 border border-stone-200 text-stone-900 text-[9px] font-medium uppercase tracking-[0.2em] px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
               New
             </span>
           )}
           {discountPercent > 0 && (
-            <span className="bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-sm">
+            <span className="bg-amber-800 text-white text-[9px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm">
               {discountPercent}% OFF
             </span>
           )}
@@ -172,11 +172,11 @@ export const ProductCard = ({ product, onQuickView }) => {
           <button
             onClick={handleQuickAdd}
             disabled={product.stock_quantity <= 0}
-            className="p-2.5 rounded-xl bg-maroon-800 hover:bg-maroon-900 text-gold-200 hover:text-white transition-all shadow-sm hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed group/btn"
+            className="px-3.5 py-1.5 rounded-full border border-stone-800 hover:bg-stone-900 hover:text-white text-stone-900 text-[10px] font-semibold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             title={product.stock_quantity > 0 ? 'Add to bag' : 'Out of stock'}
             aria-label="Add to bag"
           >
-            <ShoppingBag className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+            <span>Add</span>
           </button>
         </div>
       </div>

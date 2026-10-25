@@ -13,28 +13,28 @@ class ShippingService {
       }
     } catch (e) {}
     return {
-      free_shipping_threshold: 999,
-      standard_shipping_fee: 99,
-      express_shipping_fee: 199,
+      free_shipping_threshold: 0,
+      standard_shipping_fee: 0,
+      express_shipping_fee: 0,
       default_dispatch_days: 2
     };
   }
 
   calculateShippingFee(cartSubtotal, state = '') {
     const config = this.getShippingConfig();
-    const threshold = config.free_shipping_threshold || config.freeShippingThreshold || 999;
+    const threshold = config.free_shipping_threshold !== undefined ? config.free_shipping_threshold : 0;
     if (cartSubtotal >= threshold) {
       return 0;
     }
-    return config.standard_shipping_fee || config.defaultShippingFee || 99;
+    return config.standard_shipping_fee || 0;
   }
 
   calculateShipping(cartSubtotal, pincode = '', isExpress = false) {
     const config = this.getShippingConfig();
-    const threshold = config.free_shipping_threshold || config.freeShippingThreshold || 999;
+    const threshold = config.free_shipping_threshold !== undefined ? config.free_shipping_threshold : 0;
     const isFree = cartSubtotal >= threshold;
-    let fee = isFree ? 0 : (config.standard_shipping_fee || 99);
-    if (isExpress) fee += 100;
+    let fee = isFree ? 0 : (config.standard_shipping_fee || 0);
+    if (isExpress && config.express_shipping_fee) fee += config.express_shipping_fee;
 
     return {
       shippingFee: fee,
@@ -91,7 +91,7 @@ class ShippingService {
         serviceable: true,
         pincode: pin,
         state,
-        codAvailable: true,
+        codAvailable: false,
         prepaidAvailable: true,
         deliverySpeed: 'Express 2-4 Day Delivery'
       };

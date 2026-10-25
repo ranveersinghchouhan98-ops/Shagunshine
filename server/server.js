@@ -28,27 +28,72 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://checkout.razorpay.com"],
-      connectSrc: ["'self'", "https://api.razorpay.com", "https://lumberjack.razorpay.com"],
-      imgSrc: ["'self'", "data:", "blob:", "https://images.unsplash.com", "https://api.dicebear.com"],
-      frameSrc: ["https://api.razorpay.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"]
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://checkout.razorpay.com",
+        "https://*.razorpay.com",
+        "https://cdn.razorpay.com"
+      ],
+      scriptSrcElem: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://checkout.razorpay.com",
+        "https://*.razorpay.com",
+        "https://cdn.razorpay.com"
+      ],
+      connectSrc: [
+        "'self'",
+        "https://api.razorpay.com",
+        "https://*.razorpay.com",
+        "https://lumberjack.razorpay.com",
+        "https://*.airoapp.ai",
+        "https://shagunshinecosmetics.in",
+        "https://*.shagunshinecosmetics.in"
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "blob:",
+        "https://images.unsplash.com",
+        "https://unsplash.com",
+        "https://*.unsplash.com",
+        "https://api.dicebear.com",
+        "https://*.razorpay.com",
+        "https://cdn.razorpay.com"
+      ],
+      frameSrc: [
+        "'self'",
+        "https://api.razorpay.com",
+        "https://*.razorpay.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com"
+      ]
     }
   },
   hsts: {
-    maxAge: 31536000, // 1 year Strict-Transport-Security
+    maxAge: 31536000,
     includeSubDomains: true,
     preload: true
   },
   noSniff: true,
-  frameguard: { action: 'deny' }
+  frameguard: { action: 'sameorigin' }
 }));
 
 // 3. CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://127.0.0.1:5173',
   'http://localhost:3000',
+  'http://127.0.0.1:3000',
   'https://shagunshinecosmetics.in',
   'https://www.shagunshinecosmetics.in',
   'https://shagunshine.com',

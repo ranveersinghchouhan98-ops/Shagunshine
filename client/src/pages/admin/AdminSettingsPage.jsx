@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { INDIAN_STATES } from '../../constants/indianStates';
+import api from '../../api/apiClient';
 
 export const AdminSettingsPage = () => {
   const { addToast } = useToast();
@@ -27,22 +28,35 @@ export const AdminSettingsPage = () => {
 
   // Settings State
   const [storeProfile, setStoreProfile] = useState({
-    store_name: 'Shagun Shine Cosmetics',
+    store_name: 'SHAGUN SHINE COSMETICS',
     tagline: 'Pure Radiance, Timeless Indian Luxury',
-    legal_name: 'Shagun Shine Luxury Beauty Private Limited',
-    support_email: 'care@shagunshine.com',
-    support_phone: '+91 98765 43210',
-    address: 'Plot 42, Sector 18, Udyog Vihar',
-    city: 'Gurugram',
-    state: 'Haryana',
-    pincode: '122015',
+    legal_name: 'RAJKUMAR SINGH CHOUHAN (Proprietor)',
+    owner_name: 'RAJKUMAR SINGH CHOUHAN',
+    father_name: '',
+    pan: '',
+    gstin: '23BBVPC0623C1Z8',
+    udyam_reg_no: 'UDYAM-MP-23-0310066',
+    labour_reg_no: 'INDO260913SE002490',
+    support_email: 'rajsinghchouhan112@gmail.com',
+    supportPhone: '+91 99265 39866',
+    address: '45, Adarsh Maulik Nagar Road, Sukhliya (Near Surabhi Shoe Mart)',
+    city: 'Indore',
+    state: 'Madhya Pradesh',
+    pincode: '452003',
+    bank_name: 'UCO BANK',
+    bank_ifsc: 'UCBA0002388',
+    bank_account_no: '',
     currency: 'INR'
   });
 
   const [gstConfig, setGstConfig] = useState({
-    gstin: '07AAAAA0000A1Z5',
-    legal_name: 'Shagun Shine Luxury Beauty Private Limited',
-    state: 'Haryana',
+    gstin: '23BBVPC0623C1Z8',
+    legal_name: 'RAJKUMAR SINGH CHOUHAN',
+    trade_name: 'SHAGUN SHINE COSMETICS',
+    state: 'Madhya Pradesh',
+    city: 'Indore',
+    pincode: '452003',
+    constitution: 'Proprietorship',
     default_gst_rate: 18,
     is_inclusive: true
   });
@@ -56,15 +70,15 @@ export const AdminSettingsPage = () => {
   });
 
   const [shippingConfig, setShippingConfig] = useState({
-    free_shipping_threshold: 999,
-    standard_shipping_fee: 99,
-    express_shipping_fee: 199,
+    free_shipping_threshold: 0,
+    standard_shipping_fee: 0,
+    express_shipping_fee: 0,
     default_dispatch_days: 2
   });
 
   const [seoConfig, setSeoConfig] = useState({
     meta_title: 'Shagun Shine Cosmetics | Luxury Organic Indian Beauty',
-    meta_description: 'Discover cruelty-free, luxury Ayurvedic & cosmetic formulations infused with 24K Gold, Kumkumadi & botanicals for radiant, glowing Indian skin.',
+    meta_description: 'Discover cruelty-free, luxury Ayurvedic & cosmetic formulations infused with Kashmiri Saffron, Kumkumadi & botanicals for radiant, glowing Indian skin.',
     instagram_handle: '@shagunshinebeauty',
     facebook_handle: 'shagunshinebeauty',
     youtube_handle: '@shagunshineofficial'
@@ -79,10 +93,7 @@ export const AdminSettingsPage = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5000/api/settings', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get('/settings');
       if (data.success && data.settings) {
         if (data.settings.store_profile) setStoreProfile(data.settings.store_profile);
         if (data.settings.gst_config) setGstConfig(data.settings.gst_config);
@@ -100,22 +111,14 @@ export const AdminSettingsPage = () => {
   const handleSave = async (key, value, label) => {
     try {
       setSaving(true);
-      const res = await fetch(`http://localhost:5000/api/settings/${key}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ value })
-      });
-      const data = await res.json();
+      const data = await api.put(`/settings/${key}`, { value });
       if (data.success) {
         addToast(`${label} saved successfully!`, 'success');
       } else {
         addToast(data.message || 'Failed to update setting', 'error');
       }
     } catch (err) {
-      addToast('Network error saving setting', 'error');
+      addToast(err.message || 'Network error saving setting', 'error');
     } finally {
       setSaving(false);
     }
@@ -129,11 +132,7 @@ export const AdminSettingsPage = () => {
 
     try {
       setPurging(true);
-      const res = await fetch('http://localhost:5000/api/settings/purge-demo', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.post('/settings/purge-demo');
       if (data.success) {
         addToast('Demo transactions and test orders cleared successfully!', 'success');
         setPurgeModalOpen(false);
@@ -142,7 +141,7 @@ export const AdminSettingsPage = () => {
         addToast(data.message || 'Failed to purge demo data', 'error');
       }
     } catch (err) {
-      addToast('Error during demo data purge', 'error');
+      addToast(err.message || 'Error during demo data purge', 'error');
     } finally {
       setPurging(false);
     }
@@ -450,7 +449,7 @@ export const AdminSettingsPage = () => {
                   className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
                 />
                 <p className="text-[10px] text-stone-400 mt-1">
-                  Webhook URL to add in Razorpay Dashboard: <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700">http://localhost:5000/api/webhooks/incoming/payment-gateway</code>
+                  Webhook URL to add in Razorpay Dashboard: <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700">{window.location.origin}/api/webhooks/incoming/payment-gateway</code>
                 </p>
               </div>
 

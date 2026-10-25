@@ -26,6 +26,7 @@ server/data/shagun_shine.db
 dist/
 build/
 client/dist/
+public_html_files/
 
 # Logs
 logs

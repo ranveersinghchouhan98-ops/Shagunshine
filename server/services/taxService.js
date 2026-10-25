@@ -14,9 +14,12 @@ class TaxService {
       }
     } catch (e) {}
     return {
-      gstin: '23AAAAA0000A1Z5',
+      gstin: '23BBVPC0623C1Z8',
+      legal_name: 'RAJKUMAR SINGH CHOUHAN',
+      trade_name: 'SHAGUN SHINE COSMETICS',
       state: 'Madhya Pradesh',
       city: 'Indore',
+      pincode: '452003',
       default_gst_rate: 18,
       is_inclusive: true
     };

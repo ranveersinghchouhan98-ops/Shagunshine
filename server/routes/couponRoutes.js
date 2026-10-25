@@ -110,7 +110,7 @@ router.post('/', verifyToken, hasRole(['admin']), (req, res) => {
       Number(min_spend || 0),
       max_discount ? Number(max_discount) : null,
       Number(usage_limit || 1000),
-      expiry_date,
+      expiry_date ?? null,
       is_active !== undefined ? (is_active ? 1 : 0) : 1
     );
 
@@ -141,12 +141,12 @@ router.put('/:id', verifyToken, hasRole(['admin']), (req, res) => {
       WHERE id = ?
     `).run(
       code ? code.toUpperCase() : null,
-      discount_type,
+      discount_type ?? null,
       discount_value !== undefined ? Number(discount_value) : null,
       min_spend !== undefined ? Number(min_spend) : null,
       max_discount !== undefined ? Number(max_discount) : null,
       usage_limit !== undefined ? Number(usage_limit) : null,
-      expiry_date,
+      expiry_date ?? null,
       is_active !== undefined ? (is_active ? 1 : 0) : null,
       id
     );

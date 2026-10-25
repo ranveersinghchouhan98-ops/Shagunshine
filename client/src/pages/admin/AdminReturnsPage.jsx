@@ -12,6 +12,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import api from '../../api/apiClient';
 
 export const AdminReturnsPage = () => {
   const { addToast } = useToast();
@@ -26,8 +27,6 @@ export const AdminReturnsPage = () => {
   const [refundAmount, setRefundAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const token = localStorage.getItem('shagun_token');
-
   useEffect(() => {
     fetchReturns();
   }, [page, statusFilter]);
@@ -35,16 +34,13 @@ export const AdminReturnsPage = () => {
   const fetchReturns = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:5000/api/returns?status=${statusFilter}&page=${page}&limit=25`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const data = await api.get(`/returns?status=${statusFilter}&page=${page}&limit=25`);
       if (data.success) {
         setReturns(data.returns || []);
         setTotalCount(data.total || 0);
       }
     } catch (err) {
-      addToast('Failed to fetch return requests', 'error');
+      addToast(err.message || 'Failed to fetch return requests', 'error');
     } finally {
       setLoading(false);
     }
@@ -55,19 +51,11 @@ export const AdminReturnsPage = () => {
 
     try {
       setSubmitting(true);
-      const res = await fetch(`http://localhost:5000/api/returns/${actionModal.returnReq.id}/moderate`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          action: actionModal.type,
-          admin_notes: adminNote,
-          refund_amount: actionModal.type === 'refund' ? Number(refundAmount) : undefined
-        })
+      const data = await api.put(`/returns/${actionModal.returnReq.id}/moderate`, {
+        action: actionModal.type,
+        admin_notes: adminNote,
+        refund_amount: actionModal.type === 'refund' ? Number(refundAmount) : undefined
       });
-      const data = await res.json();
       if (data.success) {
         addToast(`Return request ${actionModal.type}ed successfully!`, 'success');
         setActionModal(null);
@@ -78,7 +66,7 @@ export const AdminReturnsPage = () => {
         addToast(data.message || 'Action failed', 'error');
       }
     } catch (err) {
-      addToast('Network error processing request', 'error');
+      addToast(err.message || 'Network error processing request', 'error');
     } finally {
       setSubmitting(false);
     }

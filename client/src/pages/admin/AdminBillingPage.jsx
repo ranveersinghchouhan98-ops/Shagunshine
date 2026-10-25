@@ -1225,12 +1225,12 @@ export const AdminBillingPage = () => {
                   Premium Luxury Cosmetics & Fragrances
                 </p>
                 <p className="text-[10px] text-stone-500">
-                  Shop No. 12, Main Market, Indore, Madhya Pradesh - 452001 | Phone: +91 98765 43210
+                  45, Adarsh Maulik Nagar Road, Sukhliya (Near Surabhi Shoe Mart), Indore, MP - 452003 | Phone: +91 99265 39866
                 </p>
                 <div className="flex items-center justify-center gap-4 text-[10px] font-mono font-semibold pt-1">
-                  <span>GSTIN: 23AAAAA0000A1Z5</span>
+                  <span>GSTIN: 23BBVPC0623C1Z8</span>
                   <span>•</span>
-                  <span>ARN: AA23082600129</span>
+                  <span>UDYAM: UDYAM-MP-23-0310066</span>
                 </div>
               </div>
 

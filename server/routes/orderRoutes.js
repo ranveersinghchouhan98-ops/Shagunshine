@@ -9,6 +9,7 @@ const paymentService = require('../services/paymentService');
 const auditService = require('../services/auditService');
 const notificationService = require('../services/notificationService');
 const webhookService = require('../services/webhookService');
+const shiprocketService = require('../services/shiprocketService');
 const sanitizeHtml = require('sanitize-html');
 const rateLimit = require('express-rate-limit');
 
@@ -421,6 +422,21 @@ router.post('/', orderPlacementLimiter, optionalToken, async (req, res) => {
       } catch (custErr) {}
     }
 
+    // Automatic Shiprocket Dispatch for Paid & Confirmed Orders
+    if (formatted.payment_status === 'Paid' || (formatted.payment_method && formatted.payment_method.toUpperCase() === 'COD')) {
+      shiprocketService.createShipmentOrder(formatted, formatted.items)
+        .then((srRes) => {
+          if (srRes && srRes.success) {
+            console.log(`✓ Order #${formatted.order_number} successfully registered in Shiprocket with ID: ${srRes.shiprocketOrderId}`);
+          } else {
+            console.warn(`[Shiprocket Notice] Order #${formatted.order_number} queued, but Shiprocket reported:`, srRes?.message);
+          }
+        })
+        .catch((srErr) => {
+          console.error(`[Shiprocket Dispatch Error] Order #${formatted.order_number}:`, srErr.message);
+        });
+    }
+
     // Trigger Webhook Event: order.created
     webhookService.trigger('order.created', {
       orderId: formatted.id,
@@ -786,7 +802,22 @@ router.post('/verify-payment', optionalToken, (req, res) => {
     });
 
     const updated = db.prepare('SELECT * FROM orders WHERE id = ?').get(order.id);
-    res.json({ success: true, message: 'Payment successfully verified.', order: formatOrder(updated) });
+    const formattedUpdated = formatOrder(updated);
+
+    // Automatic Shiprocket Dispatch upon payment verification if not already synced
+    if (formattedUpdated.shiprocket_sync_status !== 'synced') {
+      shiprocketService.createShipmentOrder(formattedUpdated, formattedUpdated.items)
+        .then((srRes) => {
+          if (srRes && srRes.success) {
+            console.log(`✓ Order #${formattedUpdated.order_number} successfully registered in Shiprocket with ID: ${srRes.shiprocketOrderId}`);
+          }
+        })
+        .catch((srErr) => {
+          console.error(`[Shiprocket Dispatch Error] Order #${formattedUpdated.order_number}:`, srErr.message);
+        });
+    }
+
+    res.json({ success: true, message: 'Payment successfully verified.', order: formattedUpdated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1172,4 +1203,41 @@ router.put('/:id/status', verifyToken, requirePermission('manage_orders'), (req,
   }
 });
 
+// @route   POST /api/orders/:id/sync-shiprocket
+// @desc    Manually dispatch or retry dispatch of order to Shiprocket
+router.post('/:id/sync-shiprocket', verifyToken, hasRole(['admin', 'super_admin', 'order_manager']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = db.prepare('SELECT * FROM orders WHERE id = ? OR order_number = ?').get(id, id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+
+    const formatted = formatOrder(order);
+    const result = await shiprocketService.createShipmentOrder(formatted, formatted.items);
+
+    if (result && result.success) {
+      const refreshed = db.prepare('SELECT * FROM orders WHERE id = ?').get(order.id);
+      return res.json({
+        success: true,
+        message: `Order #${order.order_number} successfully dispatched to Shiprocket! (Shiprocket ID: ${result.shiprocketOrderId})`,
+        shiprocketOrderId: result.shiprocketOrderId,
+        shipmentId: result.shipmentId,
+        awbCode: result.awbCode,
+        order: formatOrder(refreshed)
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: result.message || 'Failed to dispatch order to Shiprocket.',
+        errors: result.errors
+      });
+    }
+  } catch (error) {
+    console.error('Shiprocket manual sync error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Shiprocket sync error.' });
+  }
+});
+
 module.exports = router;
+

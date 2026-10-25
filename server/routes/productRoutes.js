@@ -322,9 +322,25 @@ router.post('/', verifyToken, requirePermission('manage_products'), (req, res) =
     if (Number(stock_quantity) > 0) {
       db.prepare(`
         INSERT INTO inventory_logs (
-          id, product_id, change_type, quantity_change, previous_stock, new_stock, reason, user_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(uuidv4(), productId, 'INITIAL', Number(stock_quantity), 0, Number(stock_quantity), 'Initial stock setup', req.user.id);
+          id, product_id, variant_id, order_id, change_qty, balance_qty, reason, performed_by,
+          change_type, quantity_change, previous_stock, new_stock, reference_id, user_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        uuidv4(),
+        productId,
+        null,
+        null,
+        Number(stock_quantity),
+        Number(stock_quantity),
+        'Initial stock setup',
+        req.user?.name || req.user?.email || 'Staff',
+        'INITIAL',
+        Number(stock_quantity),
+        0,
+        Number(stock_quantity),
+        null,
+        req.user?.id || null
+      );
     }
 
     auditService.log({
@@ -401,17 +417,24 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
       const diff = Number(stock_quantity) - existing.stock_quantity;
       db.prepare(`
         INSERT INTO inventory_logs (
-          id, product_id, change_type, quantity_change, previous_stock, new_stock, reason, user_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          id, product_id, variant_id, order_id, change_qty, balance_qty, reason, performed_by,
+          change_type, quantity_change, previous_stock, new_stock, reference_id, user_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         uuidv4(),
         id,
+        null,
+        null,
+        diff,
+        Number(stock_quantity),
+        'Direct update in product manager',
+        req.user?.name || req.user?.email || 'Staff',
         'ADJUSTMENT',
         diff,
         existing.stock_quantity,
         Number(stock_quantity),
-        'Direct update in product manager',
-        req.user.id
+        null,
+        req.user?.id || null
       );
 
       // Trigger stock update webhook
@@ -457,31 +480,31 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(
-      name,
-      sku,
-      category_id,
-      subcategory,
+      name ?? null,
+      sku ?? null,
+      category_id ?? null,
+      subcategory !== undefined ? (subcategory ?? '') : null,
       price !== undefined ? Number(price) : null,
-      mrp !== undefined ? Number(mrp) : null,
+      mrp !== undefined ? (mrp ? Number(mrp) : null) : null,
       discount_price !== undefined ? (discount_price ? Number(discount_price) : null) : existing.discount_price,
       cost_price !== undefined ? (cost_price ? Number(cost_price) : null) : existing.cost_price,
       gst_rate !== undefined ? Number(gst_rate) : null,
-      hsn_code,
-      batch_number,
-      mfg_date,
-      exp_date,
-      warnings,
-      storage_instructions,
+      hsn_code ?? null,
+      batch_number ?? null,
+      mfg_date ?? null,
+      exp_date ?? null,
+      warnings ?? null,
+      storage_instructions ?? null,
       stock_quantity !== undefined ? Number(stock_quantity) : null,
-      description,
-      short_description,
-      ingredients,
-      how_to_use,
-      skin_type,
-      benefits ? JSON.stringify(benefits) : null,
-      shades ? JSON.stringify(shades) : null,
-      images ? JSON.stringify(images) : null,
-      status,
+      description ?? null,
+      short_description ?? null,
+      ingredients ?? null,
+      how_to_use ?? null,
+      skin_type ?? null,
+      benefits !== undefined ? (Array.isArray(benefits) ? JSON.stringify(benefits) : benefits) : null,
+      shades !== undefined ? (Array.isArray(shades) ? JSON.stringify(shades) : shades) : null,
+      images !== undefined ? (Array.isArray(images) ? JSON.stringify(images) : images) : null,
+      status ?? null,
       is_featured !== undefined ? (is_featured ? 1 : 0) : null,
       is_best_seller !== undefined ? (is_best_seller ? 1 : 0) : null,
       is_new_arrival !== undefined ? (is_new_arrival ? 1 : 0) : null,
@@ -513,7 +536,8 @@ router.put('/:id', verifyToken, requirePermission('manage_products'), (req, res)
 
     res.json({ success: true, message: 'Product updated successfully!', product: formatProduct(updated, true) });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error updating product.' });
+    console.error('Update product error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Server error updating product.' });
   }
 });
 
@@ -548,9 +572,25 @@ router.post('/:id/adjust-stock', verifyToken, requirePermission('manage_inventor
 
     db.prepare(`
       INSERT INTO inventory_logs (
-        id, product_id, variant_id, change_type, quantity_change, previous_stock, new_stock, reason, user_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(uuidv4(), id, variantId || null, changeType, change, prevStock, newStock, reason, req.user.id);
+        id, product_id, variant_id, order_id, change_qty, balance_qty, reason, performed_by,
+        change_type, quantity_change, previous_stock, new_stock, reference_id, user_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      uuidv4(),
+      id,
+      variantId || null,
+      null,
+      change,
+      newStock,
+      reason,
+      req.user?.name || req.user?.email || 'Staff',
+      changeType,
+      change,
+      prevStock,
+      newStock,
+      null,
+      req.user?.id || null
+    );
 
     auditService.log({
       userId: req.user.id,

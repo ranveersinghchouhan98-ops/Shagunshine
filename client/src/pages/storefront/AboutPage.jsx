@@ -18,7 +18,7 @@ export const AboutPage = () => {
           </h1>
 
           <p className="text-stone-300 text-xs sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Shagun Shine Cosmetics was born from a timeless vision: to fuse ancient Indian royal beauty rituals, Kashmiri saffron, and pure 24K gold dust with dermatologically proven clean cosmetic science.
+            Shagun Shine Cosmetics was born from a timeless vision: to fuse ancient Indian royal beauty rituals, Kashmiri saffron, and potent clean botanicals with dermatologically proven cosmetic science.
           </p>
         </div>
       </section>
@@ -37,7 +37,7 @@ export const AboutPage = () => {
               In ancient Indian royal courts, beauty ceremonies were considered sacred acts of wellness. From golden petal infusions to steam-distilled Damask roses, queens and maharanis commanded bespoke beauty formulations that nurtured the spirit as well as the skin.
             </p>
             <p className="text-stone-600 text-sm leading-relaxed">
-              At Shagun Shine, we honor that heritage by sourcing certified organic Kashmiri Mongra Saffron, pure 24K gold dust, and therapeutic cold-pressed essential oils. Every creation is 100% cruelty-free, sulfate-free, and formulated without harmful chemicals.
+              At Shagun Shine, we honor that heritage by sourcing certified organic Kashmiri Mongra Saffron, therapeutic floral waters, and cold-pressed essential oils. Every creation is 100% cruelty-free, sulfate-free, and formulated without harmful chemicals.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-2">
@@ -46,8 +46,8 @@ export const AboutPage = () => {
                 <div className="text-xs text-stone-600 font-semibold mt-0.5">Cruelty-Free & Vegan Friendly</div>
               </div>
               <div className="p-4 rounded-xl bg-ivory-100 border border-gold-300/60">
-                <div className="font-serif text-2xl font-bold text-maroon-900">24K</div>
-                <div className="text-xs text-stone-600 font-semibold mt-0.5">Certified Pure Gold Dust</div>
+                <div className="font-serif text-2xl font-bold text-maroon-900">Pure</div>
+                <div className="text-xs text-stone-600 font-semibold mt-0.5">Botanical Actives & Saffron</div>
               </div>
             </div>
           </div>

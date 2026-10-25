@@ -4,7 +4,7 @@ import { Search, X, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import api from '../../api/apiClient';
 
 const TRENDING_SEARCHES = [
-  '24K Gold Radiant Serum',
+  'Radiant Saffron Youth Serum',
   'Royal Silk Lipstick',
   'Kumkumadi Night Cream',
   'Bridal Radiance Box',

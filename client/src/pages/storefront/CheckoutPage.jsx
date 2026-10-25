@@ -32,10 +32,8 @@ export const CheckoutPage = () => {
   const {
     cartItems,
     subtotal,
-    discountAmount,
     shippingFee,
     totalAmount,
-    coupon,
     clearCart
   } = useCart();
   const { success, error } = useToast();
@@ -128,7 +126,17 @@ export const CheckoutPage = () => {
     });
   };
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!fullName || !email || !phone || !addressLine1 || !city || !state || !postalCode) {
+      error('Please complete all delivery address fields.');
+      return;
+    }
+    if (!/^\d{6}$/.test(postalCode.trim())) {
+      error('Please enter a valid 6-digit Indian PIN code (e.g. 400050, 110001).');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const shippingAddress = {
@@ -155,11 +163,11 @@ export const CheckoutPage = () => {
         throw new Error(pOrderRes.message || 'Unable to initialize Razorpay payment order.');
       }
 
+      const pOrder = pOrderRes.order;
       const keyId = pOrderRes.key_id || pOrder.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID;
 
       // 2. Submit order function after payment verification
       const submitOrder = async (payOrderId, paymentId, signature) => {
-        // Step 3: Verify payment signature with backend
         try {
           await api.post('/verify-payment', {
             order_id: payOrderId,
@@ -175,13 +183,13 @@ export const CheckoutPage = () => {
           customerEmail: email,
           customerPhone: phone,
           shippingAddress,
-          paymentMethod: 'RAZORPAY_' + paymentMethod,
+          paymentMethod: 'RAZORPAY',
           items: cartItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             selectedShade: item.selectedShade
           })),
-          couponCode: coupon?.code || null,
+          couponCode: null,
           paymentGatewayOrderId: payOrderId,
           paymentGatewayPaymentId: paymentId,
           paymentGatewaySignature: signature
@@ -204,12 +212,11 @@ export const CheckoutPage = () => {
         }
       };
 
-      // If in mock or placeholder mode (keys not yet added by user), allow direct simulated confirmation
+      // If mock payments enabled and no valid key, allow dev simulation
       const isPlaceholderKey = !keyId || keyId.includes('placeholder') || keyId.includes('mock');
       const scriptLoaded = await loadRazorpayScript();
 
       if (!scriptLoaded || isPlaceholderKey || !window.Razorpay) {
-        // Fallback simulated payment for local development/testing before keys are entered
         await submitOrder(
           pOrder.id,
           'pay_sim_' + Math.random().toString(36).substring(2, 10),
@@ -218,7 +225,7 @@ export const CheckoutPage = () => {
         return;
       }
 
-      // 3. Open official Razorpay Checkout Modal
+      // 3. Open official Razorpay Checkout Modal directly
       const options = {
         key: keyId,
         amount: pOrder.amount,
@@ -243,6 +250,8 @@ export const CheckoutPage = () => {
             );
           } catch (e) {
             error(e.message || 'Verification failed. Please contact support.');
+          } finally {
+            setIsSubmitting(false);
           }
         },
         modal: {
@@ -259,7 +268,8 @@ export const CheckoutPage = () => {
       });
       rzp.open();
     } catch (err) {
-      error(err.message || 'Error processing payment.');
+      console.error('Payment initiation error:', err);
+      error(err.message || 'Could not initiate Razorpay payment.');
       setIsSubmitting(false);
     }
   };
@@ -601,21 +611,23 @@ export const CheckoutPage = () => {
 
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl bg-maroon-800 hover:bg-maroon-900 text-gold-100 text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-800 hover:from-maroon-900 hover:to-stone-950 text-gold-100 text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <span>Continue to Payment</span>
+                <ShieldCheck className="w-4 h-4 text-gold-400" />
+                <span>{isSubmitting ? 'Connecting to Razorpay...' : `Pay ₹${totalAmount.toLocaleString()} via Razorpay`}</span>
                 <ChevronRight className="w-4 h-4 text-gold-400" />
               </button>
             </form>
           )}
 
-          {/* STEP 2: Payment Options */}
+          {/* STEP 2: Direct Razorpay Checkout View */}
           {step === 2 && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-stone-200">
+            <div className="space-y-6 text-center py-6">
+              <div className="flex items-center justify-between pb-4 border-b border-stone-200 text-left">
                 <h2 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
                   <Lock className="w-5 h-5 text-gold-700" />
-                  <span>Choose Payment Method</span>
+                  <span>Razorpay Payment Gateway</span>
                 </h2>
                 <button
                   onClick={() => setStep(1)}
@@ -625,156 +637,34 @@ export const CheckoutPage = () => {
                 </button>
               </div>
 
-              {/* Payment Tabs */}
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { id: 'UPI', label: 'UPI / QR', icon: QrCode },
-                  { id: 'CARD', label: 'Credit/Debit Card', icon: CreditCard },
-                  { id: 'NETBANKING', label: 'Net Banking', icon: Sparkles }
-                ].map((pm) => {
-                  const Icon = pm.icon;
-                  return (
-                    <button
-                      key={pm.id}
-                      type="button"
-                      onClick={() => setPaymentMethod(pm.id)}
-                      className={`p-3.5 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${
-                        paymentMethod === pm.id
-                          ? 'border-maroon-800 bg-ivory-50 text-maroon-900 font-bold shadow-sm ring-1 ring-gold-400/40'
-                          : 'border-stone-200 hover:border-gold-300 text-stone-600'
-                      }`}
-                    >
-                      <Icon className="w-5 h-5 text-gold-700" />
-                      <span className="text-xs text-center">{pm.label}</span>
-                    </button>
-                  );
-                })}
+              <div className="max-w-md mx-auto p-8 rounded-2xl bg-ivory-50 border border-gold-200/80 space-y-4">
+                <div className="w-16 h-16 bg-white rounded-full mx-auto flex items-center justify-center shadow-md border border-gold-300">
+                  <CreditCard className="w-8 h-8 text-maroon-800" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-stone-900">Official Razorpay Checkout</h3>
+                  <p className="text-xs text-stone-600 mt-1">
+                    Pay securely using UPI (Google Pay, PhonePe, Paytm), Credit/Debit Card, or Net Banking.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-white rounded-xl border border-stone-200 text-xs text-stone-700 flex justify-between items-center font-mono">
+                  <span>Payable Amount:</span>
+                  <span className="font-bold text-maroon-900 text-sm">₹{totalAmount.toLocaleString()}</span>
+                </div>
+
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={isSubmitting}
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-800 hover:from-maroon-900 hover:to-stone-950 text-gold-100 text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <ShieldCheck className="w-4 h-4 text-gold-400" />
+                  <span>{isSubmitting ? 'Opening Razorpay Gateway...' : 'Open Razorpay & Pay Now'}</span>
+                </button>
               </div>
-
-              {/* UPI View */}
-              {paymentMethod === 'UPI' && (
-                <div className="p-6 rounded-2xl bg-ivory-50 border border-gold-200/60 space-y-4 text-center">
-                  <div className="max-w-xs mx-auto space-y-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-stone-700 block">
-                      Scan QR with Any UPI App
-                    </span>
-                    <div className="w-44 h-44 bg-white p-3 rounded-2xl border-2 border-gold-400 shadow-md mx-auto flex items-center justify-center">
-                      {/* Realistic SVG QR Preview */}
-                      <img
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=shagunshine@okaxis&pn=ShagunShineCosmetics&am=2718"
-                        alt="UPI QR Code"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <p className="text-[11px] text-stone-500">Scan via GPay, PhonePe, Paytm, or BHIM</p>
-
-                    <div className="pt-2">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={upiVpa}
-                          onChange={(e) => setUpiVpa(e.target.value)}
-                          placeholder="Or enter UPI ID (e.g. username@upi)"
-                          className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:border-gold-500 bg-white text-center"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Card View with Live Card Preview */}
-              {paymentMethod === 'CARD' && (
-                <div className="p-6 rounded-2xl bg-ivory-50 border border-gold-200/60 space-y-4">
-                  {/* Virtual Luxury Card Graphic */}
-                  <div className="max-w-sm mx-auto p-5 rounded-2xl bg-gradient-to-tr from-stone-900 via-maroon-900 to-stone-950 text-white shadow-xl border border-gold-400/40 space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-serif text-sm font-bold text-gold-300">Shagun Shine Pay</span>
-                      <CreditCard className="w-6 h-6 text-gold-400" />
-                    </div>
-                    <div className="font-mono text-base tracking-widest pt-2">
-                      {cardNumber || '•••• •••• •••• ••••'}
-                    </div>
-                    <div className="flex justify-between items-end text-[10px] text-stone-300 uppercase tracking-wider">
-                      <div>
-                        <span className="block text-stone-400 text-[9px]">Card Holder</span>
-                        <span>{cardHolder || fullName || 'YOUR NAME'}</span>
-                      </div>
-                      <div>
-                        <span className="block text-stone-400 text-[9px]">Expires</span>
-                        <span>{cardExpiry || 'MM/YY'}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Card Form */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-sm mx-auto pt-2">
-                    <div className="sm:col-span-2">
-                      <label className="text-[11px] font-bold text-stone-700 block mb-1">Card Number</label>
-                      <input
-                        type="text"
-                        maxLength={19}
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                        placeholder="4532 8912 3456 7890"
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] font-bold text-stone-700 block mb-1">Expiry (MM/YY)</label>
-                      <input
-                        type="text"
-                        maxLength={5}
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(e.target.value)}
-                        placeholder="12/28"
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white text-center"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] font-bold text-stone-700 block mb-1">CVV / CVC</label>
-                      <input
-                        type="password"
-                        maxLength={3}
-                        value={cardCvv}
-                        onChange={(e) => setCardCvv(e.target.value)}
-                        placeholder="•••"
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white text-center"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Net Banking View */}
-              {paymentMethod === 'NETBANKING' && (
-                <div className="p-6 rounded-2xl bg-ivory-50 border border-gold-200/60 space-y-3">
-                  <label className="text-xs font-bold uppercase tracking-wider text-stone-700 block">
-                    Select Your Bank
-                  </label>
-                  <select
-                    value={selectedBank}
-                    onChange={(e) => setSelectedBank(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs bg-white"
-                  >
-                    {['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Mahindra Bank', 'Punjab National Bank'].map((b) => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Place Order CTA */}
-              <button
-                onClick={handlePlaceOrder}
-                disabled={isSubmitting}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-800 hover:from-maroon-900 hover:to-stone-950 text-gold-100 text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <ShieldCheck className="w-4 h-4 text-gold-400" />
-                <span>{isSubmitting ? 'Processing Payment & Placing Order...' : `Pay ₹${totalAmount.toLocaleString()} & Complete Order`}</span>
-              </button>
             </div>
           )}
+
         </div>
 
         {/* Right Column: Order Summary Review (4 cols) */}
@@ -803,12 +693,6 @@ export const CheckoutPage = () => {
               <span>Subtotal</span>
               <span className="font-semibold text-stone-900">₹{subtotal.toLocaleString()}</span>
             </div>
-            {discountAmount > 0 && (
-              <div className="flex justify-between text-emerald-700 font-semibold">
-                <span>Coupon ({coupon?.code})</span>
-                <span>-₹{discountAmount.toFixed(0)}</span>
-              </div>
-            )}
             <div className="flex justify-between">
               <span>Shipping</span>
               <span>{shippingFee === 0 ? <strong className="text-emerald-700 font-bold">FREE</strong> : `₹${shippingFee}`}</span>

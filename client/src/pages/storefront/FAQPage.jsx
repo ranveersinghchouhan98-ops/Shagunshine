@@ -9,13 +9,13 @@ const FAQS = [
   },
   {
     category: 'Formulation & Authenticity',
-    q: 'Do you use genuine 24K pure gold in the Youth Elixir?',
-    a: 'Yes! Our 24K Gold Radiant Youth Elixir and bridal kits are infused with certified 99.9% pure cosmetic grade 24K gold dust and genuine Kashmiri Saffron.'
+    q: 'What active botanicals do you use in your skincare formulations?',
+    a: 'Our formulations are infused with certified organic Kashmiri Mongra Saffron, Kumkumadi oil, pure floral extracts, and concentrated Hyaluronic Acid for timeless royal radiance.'
   },
   {
     category: 'Orders & Shipping',
     q: 'What are the delivery timelines and shipping charges?',
-    a: 'We offer complimentary luxury delivery on all orders above ₹999 across India. Standard orders are dispatched within 24 hours and delivered in 3-5 business days via our express courier partners.'
+    a: 'We offer complimentary luxury delivery on all orders across India. Standard orders are dispatched within 24 hours and delivered in 3-5 business days via our express courier partners.'
   },
   {
     category: 'Orders & Shipping',

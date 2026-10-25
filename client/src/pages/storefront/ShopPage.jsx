@@ -125,7 +125,7 @@ export const ShopPage = () => {
             <p className="text-xs sm:text-sm text-stone-500 mt-1 max-w-xl">
               {activeCategoryObj
                 ? activeCategoryObj.description
-                : 'Indulge in pure 24K gold elixirs, velvet lipsticks, Ayurvedic hair rituals, and royal French-Indian perfumery.'}
+                : 'Indulge in radiant serums, velvet lipsticks, Ayurvedic hair rituals, and royal French-Indian perfumery.'}
             </p>
           </div>
 

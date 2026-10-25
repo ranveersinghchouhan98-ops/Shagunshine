@@ -225,7 +225,7 @@ export const AdminBannersPage = () => {
                   rows={2}
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
-                  placeholder="Unlock Luminous beauty with 24K pure gold flakes..."
+                  placeholder="Unlock luminous beauty with Kashmiri saffron & botanicals..."
                   className="w-full px-3.5 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:border-gold-500"
                 />
               </div>
